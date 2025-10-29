@@ -1,0 +1,24 @@
+-- Create test users for all 11 roles
+-- Password for all test users: TestUser77!
+-- 
+-- IMPORTANT: This script creates auth users via Supabase Auth Admin API
+-- You need to run this through the Supabase dashboard SQL editor or use the seed script
+--
+-- Test user credentials:
+-- super_admin@lxd360.com - Super Admin
+-- admin@lxd360.com - Admin  
+-- designer@lxd360.com - Designer
+-- lmsadmin@lxd360.com - LMS Admin
+-- programadmin@lxd360.com - Program Admin
+-- courseadmin@lxd360.com - Course Admin
+-- sales@lxd360.com - Sales
+-- manager@lxd360.com - Manager
+-- instructor@lxd360.com - Instructor
+-- teamlearner@lxd360.com - Team Learner
+-- learner@lxd360.com - Individual Learner
+
+-- Note: You'll need to create these users through Supabase Auth Admin API
+-- or use the seed-test-users-all-roles.ts script to create them programmatically
+
+-- This script just documents the test user structure
+-- The actual user creation happens through the TypeScript seed script
