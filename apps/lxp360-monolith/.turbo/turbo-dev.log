@@ -1,4 +1,17 @@
 
-> my-v0-project@0.1.0 dev G:\GitHub\LXP360-AI-SaaS\apps\lxp360-monolith
+> my-v0-project@0.1.0 dev G:\GitHub\LXP360-SaaS\LXP360-AI-SaaS\apps\lxp360-monolith
 > next dev
 
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+ ⚠ Port 3002 is in use, trying 3003 instead.
+ ⚠ Port 3003 is in use, trying 3004 instead.
+  ▲ Next.js 14.2.16
+  - Local:        http://localhost:3004
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 9.6s
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: SyntaxError: G:\GitHub\LXP360-SaaS\LXP360-AI-SaaS\package.json (directory description file): SyntaxError: Unexpected token '﻿', "﻿{
+<w>   "name"... is not valid JSON
+<w> while resolving 'graceful-fs' in G:\GitHub\LXP360-SaaS\LXP360-AI-SaaS\node_modules\.pnpm\next@14.2.16_@babel+core@7.28.5_react-dom@18.3.1_react@18.3.1\node_modules\next to a directory
