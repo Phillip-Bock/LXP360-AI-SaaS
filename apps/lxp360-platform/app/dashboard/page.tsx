@@ -163,6 +163,20 @@ const messages = [
 ]
 
 export default async function DashboardPage() {
+  const isMasterLXD = process.env.NEXT_PUBLIC_GOD_MODE === "true"
+
+  // Master LXD bypass for development
+  if (isMasterLXD) {
+    console.log("[v0] Master LXD enabled - bypassing authentication")
+    return (
+      <DashboardClient
+        role="super_admin"
+        userName="Master LXD User"
+        userEmail="dev@lxp360.com"
+      />
+    )
+  }
+
   const userRole = await getUserPrimaryRole()
   const currentUser = await getCurrentUser()
 

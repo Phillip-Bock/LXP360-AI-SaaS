@@ -62,7 +62,7 @@ export function DevRoleSelector() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4" style={{ zIndex: 10000 }}>
       <Card className="bg-[#232323] border-[#7103A0] border-[1.5px] p-4 max-w-xs">
         <div className="space-y-3">
           <div className="flex items-center justify-between">

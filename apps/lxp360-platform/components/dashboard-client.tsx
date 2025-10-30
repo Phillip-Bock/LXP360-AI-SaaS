@@ -5,7 +5,7 @@ import { type UserRoleType } from "@/lib/types/user-roles"
 import { SuperAdminDashboard } from "@/components/dashboards/super-admin-dashboard"
 import { AdminDashboard } from "@/components/dashboards/admin-dashboard"
 import { DesignerDashboard } from "@/components/dashboards/designer-dashboard"
-import { LmsAdminDashboard } from "@/components/dashboards/lms-admin-dashboard"
+import { LMSAdminDashboard } from "@/components/dashboards/lms-admin-dashboard"
 import { ProgramAdminDashboard } from "@/components/dashboards/program-admin-dashboard"
 import { CourseAdminDashboard } from "@/components/dashboards/course-admin-dashboard"
 import { SalesDashboard } from "@/components/dashboards/sales-dashboard"
@@ -48,7 +48,7 @@ export function DashboardClient({ role: serverRole, userName, userEmail }: Dashb
       DashboardComponent = <DesignerDashboard userName={userName} userEmail={userEmail} />
       break
     case "lms_admin":
-      DashboardComponent = <LmsAdminDashboard userName={userName} userEmail={userEmail} />
+      DashboardComponent = <LMSAdminDashboard userName={userName} userEmail={userEmail} />
       break
     case "program_admin":
       DashboardComponent = <ProgramAdminDashboard userName={userName} userEmail={userEmail} />

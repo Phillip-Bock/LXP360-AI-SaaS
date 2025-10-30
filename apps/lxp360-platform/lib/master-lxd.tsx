@@ -2,18 +2,18 @@
 
 import React from "react";
 
-export const GOD_MODE_CONFIG = {
+export const MASTER_LXD_CONFIG = {
   enabled: process.env.NEXT_PUBLIC_GOD_MODE === "true",
   mockUser: {
     id: "dev-user-001",
-    email: "dev@lxd360.com",
-    name: "Dev Mode User",
+    email: "dev@lxp360.com",
+    name: "Master LXD User",
     role: "SUPER_ADMIN",
   },
 };
 
 export function DevRoleSwitcher() {
-  if (!GOD_MODE_CONFIG.enabled) return null;
+  if (!MASTER_LXD_CONFIG.enabled) return null;
 
   return React.createElement(
     "div",
@@ -24,12 +24,12 @@ export function DevRoleSwitcher() {
     React.createElement(
       "div",
       { className: "font-bold text-lg" },
-      "⚡ GOD MODE ACTIVE",
+      "⚡ MASTER LXD ACTIVE",
     ),
     React.createElement(
       "div",
       { className: "text-sm mt-2" },
-      "Role: " + GOD_MODE_CONFIG.mockUser.role,
+      "Role: " + MASTER_LXD_CONFIG.mockUser.role,
     ),
     React.createElement(
       "div",
@@ -40,9 +40,9 @@ export function DevRoleSwitcher() {
 }
 
 export function hasPermission() {
-  return GOD_MODE_CONFIG.enabled;
+  return MASTER_LXD_CONFIG.enabled;
 }
 
 export function getCurrentUser() {
-  return GOD_MODE_CONFIG.enabled ? GOD_MODE_CONFIG.mockUser : null;
+  return MASTER_LXD_CONFIG.enabled ? MASTER_LXD_CONFIG.mockUser : null;
 }
