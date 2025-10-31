@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Mentor Question Feedback Tool</title>
+    <!-- Lato Font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Lato font and general aesthetics */
+        body {
+            font-family: 'Lato', sans-serif; /* Changed to Lato */
+            background-color: #234F7A; /* Primary Blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px; /* Custom corner radius */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Stronger shadow for contrast */
+            padding: 2rem; /* Reduced padding slightly */
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Reduced gap between elements */
+            position: relative; /* For absolute positioning of counter/bar */
+        }
+        textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px; /* Reduced min-height for textarea */
+            max-height: 120px; /* Added max-height to prevent excessive growth */
+            border-radius: 10px; /* Custom corner radius */
+        }
+        button {
+            transition: all 0.2s ease-in-out;
+            border-radius: 10px; /* Custom corner radius */
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        /* Specific button colors and hover states */
+        .btn-primary {
+            background-color: #234F7A; /* Primary Blue */
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #326392; /* Lighter Primary Blue on hover */
+        }
+        .btn-secondary {
+            background-color: #4277A9; /* Another shade of Primary Blue */
+            color: white;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #4981B5; /* Lighter Secondary Blue on hover */
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #234F7A; /* Primary blue spinner */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Message box styling (inline) */
+        .inline-message-box {
+            background-color: #098E00; /* Dark Green for contrast */
+            color: #FFFFFF; /* White text for contrast */
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 1rem; /* Space below it */
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            height: 0; /* Initially hidden */
+            overflow: hidden;
+            transition: opacity 0.3s ease-in-out, height 0.3s ease-in-out, padding 0.3s ease-in-out, margin-bottom 0.3s ease-in-out;
+        }
+        .inline-message-box.show {
+            opacity: 1;
+            height: auto; /* Show content */
+            padding: 10px 15px;
+            margin-bottom: 1rem;
+        }
+
+        /* Performance Bar and Counter Positioning */
+        .top-left-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            z-index: 10;
+        }
+        .performance-bar-container {
+            width: 150px; /* Fixed width for subtlety */
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 15px; /* Thinner bar */
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .performance-bar {
+            height: 100%;
+            width: 100%; /* Start full green */
+            background-color: #098E00; /* Dark Green */
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
+        }
+        .question-counter {
+            color: #4a5568; /* Darker gray for text */
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Base Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            position: relative;
+            max-height: 90vh; /* Ensure modal fits screen height */
+            overflow-y: auto; /* Enable scrolling for modal content if needed */
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+        .modal-close-btn:hover {
+            color: #333;
+        }
+        .copy-button {
+            background-color: #234F7A;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            transition: background-color 0.2s;
+            display: block; /* Make it a block element */
+            margin: 1rem auto 0; /* Center it with margin-top */
+            width: fit-content; /* Adjust width to content */
+        }
+        .copy-button:hover:not(:disabled) {
+            background-color: #326392;
+        }
+        .copied-feedback {
+            background-color: #098E00; /* Green for copied */
+            color: white; /* Ensure text is white on green */
+        }
+        /* Reduced margin for p tags in feedback/modal content */
+        .text-gray-600, .text-gray-700 {
+            margin-bottom: 0.5rem; /* Reduced margin */
+        }
+        .text-gray-600:last-child, .text-gray-700:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Performance Bar and Question Counter -->
+        <div class="top-left-info">
+            <div class="performance-bar-container">
+                <div id="performanceBar" class="performance-bar" style="width: 100%; background-color: #098E00;"></div>
+            </div>
+            <div class="question-counter">
+                Scenario <span id="scenarioCounter">1</span> of <span id="totalScenarios">5</span>
+            </div>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-4">Elevating Inquiry in the Age of AI</h1>
+        <p class="text-gray-600 text-center mb-4">
+            In this interactive tool, you'll tackle real-world office scenarios involving technology. Your goal is to formulate effective questions that help you navigate challenges and leverage solutions. When you are ready, your E-Mentor will provide instant feedback, helping you refine your critical thinking and questioning skills. You also have your E-Mentor Rephrase the Scenario if you do not fully understand it.
+        </p>
+
+        <!-- Scenario Prompt -->
+        <div class="mb-4 p-5 bg-blue-50 border border-blue-200 rounded-[10px]">
+            <h2 class="text-xl font-semibold text-blue-800 mb-3" id="scenarioTitle">Scenario:</h2>
+            <p id="scenarioPrompt" class="text-gray-700 leading-relaxed">
+                <!-- Scenario will be loaded here -->
+            </p>
+        </div>
+
+        <!-- Inline Message Box (for warnings/feedback) -->
+        <div id="inlineMessageBox" class="inline-message-box"></div>
+
+        <div class="mb-4">
+            <label for="questionInput" class="block text-lg font-medium text-gray-700 mb-2">Your Question:</label>
+            <textarea
+                id="questionInput"
+                class="w-full p-4 border border-gray-300 rounded-[10px] focus:ring-blue-500 focus:border-blue-500 text-gray-800 placeholder-gray-400"
+                placeholder="Type your question here..."
+            ></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <button
+                id="submitQuestionBtn"
+                class="btn-primary font-bold py-3 px-6 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 flex items-center justify-center"
+                disabled
+            >
+                Check My Question
+                <span id="loadingSpinner" class="loading-spinner hidden"></span>
+            </button>
+            <button
+                id="clearAnswerBtn"
+                class="btn-secondary font-bold py-3 px-6 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
+                Clear My Answer
+            </button>
+            <button
+                id="rephraseScenarioBtn"
+                class="btn-secondary font-bold py-3 px-6 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
+                Rephrase Scenario
+                <span id="rephraseLoadingSpinner" class="loading-spinner hidden"></span>
+            </button>
+            <button
+                id="nextScenarioBtn"
+                class="btn-primary font-bold py-3 px-6 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
+                Next Scenario
+            </button>
+        </div>
+    </div>
+
+    <!-- E-Mentor Feedback Modal -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeFeedbackModalBtn">&times;</button>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">E-Mentor Feedback: <span id="modalFeedbackRating" class="font-bold"></span></h2>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Scenario:</h3>
+                <p id="feedbackModalScenario" class="text-gray-600"></p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Your Question:</h3>
+                <p id="feedbackModalQuestion" class="text-gray-600"></p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Feedback:</h3>
+                <p id="modalFeedbackContent" class="text-gray-600"></p>
+            </div>
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Tip:</h3>
+                <p id="modalFeedbackTip" class="text-gray-600"></p>
+            </div>
+            <button id="copyImmediateFeedbackBtn" class="copy-button">Copy</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Version: 1.0.1 - Added version tracking, API key comment, and full rubric as comments.
+        // Date: July 15, 2025
+        // Author: Gemini
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // UI Elements
+        const questionInput = document.getElementById('questionInput');
+        const submitQuestionBtn = document.getElementById('submitQuestionBtn');
+        const clearAnswerBtn = document.getElementById('clearAnswerBtn');
+        const rephraseScenarioBtn = document.getElementById('rephraseScenarioBtn');
+        const nextScenarioBtn = document.getElementById('nextScenarioBtn');
+        const scenarioPromptElem = document.getElementById('scenarioPrompt');
+        const scenarioTitleElem = document.getElementById('scenarioTitle'); // New: for changing "Scenario:" text
+        const scenarioCounterElem = document.getElementById('scenarioCounter');
+        const totalScenariosElem = document.getElementById('totalScenarios');
+        const performanceBar = document.getElementById('performanceBar');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const rephraseLoadingSpinner = document.getElementById('rephraseLoadingSpinner'); // New spinner for rephrase
+        const inlineMessageBox = document.getElementById('inlineMessageBox'); // New: for inline messages
+
+        // E-Mentor Feedback Modal Elements
+        const feedbackModal = document.getElementById('feedbackModal');
+        const closeFeedbackModalBtn = document.getElementById('closeFeedbackModalBtn');
+        const modalFeedbackRating = document.getElementById('modalFeedbackRating');
+        const feedbackModalScenario = document.getElementById('feedbackModalScenario');
+        const feedbackModalQuestion = document.getElementById('feedbackModalQuestion');
+        const modalFeedbackContent = document.getElementById('modalFeedbackContent');
+        const modalFeedbackTip = document.getElementById('modalFeedbackTip');
+        const copyImmediateFeedbackBtn = document.getElementById('copyImmediateFeedbackBtn');
+
+        // Game State
+        let currentScenarioIndex = 0;
+        let performanceScore = 100; // Start with full performance
+        const maxScenarios = 5;
+        let currentQuestion = ''; // Store the user's current question for reflection
+        let currentFeedbackText = ''; // Store E-Mentor feedback for reflection (main part)
+        let currentTipText = ''; // Store E-Mentor tip for reflection
+        let currentRating = ''; // Store E-Mentor rating
+        let rephraseCount = 0; // New: Track rephrases per scenario
+        const MAX_REPHRASES = 3; // New: Max rephrases allowed
+
+        // Define Scenarios
+        const scenarios = [
+            {
+                id: 1,
+                prompt: "You're a project manager. Your team is struggling to understand why the new AI-powered anomaly detection system is flagging so many false positives in the financial transaction data. You need to get to the root cause quickly.",
+                originalPrompt: "You're a project manager. Your team is struggling to understand why the new AI-powered anomaly detection system is flagging so many false positives in the financial transaction data. You need to get to the root cause quickly.",
+                idealQuestion: "What specific features or data points are most strongly correlated with the false positive anomalies identified by the AI system in the financial transactions, and what is the confidence score for these correlations?"
+            },
+            {
+                id: 2,
+                prompt: "You're a marketing specialist. You want to use an AI content generation tool to create engaging social media posts, but you're worried about the tone and accuracy. You need to give the AI a clear direction.",
+                originalPrompt: "You're a marketing specialist. You want to use an AI content generation tool to create engaging social media posts, but you're worried about the tone and accuracy. You need to give the AI a clear direction.",
+                idealQuestion: "Generate five social media posts for our new eco-friendly product line, targeting millennials on Instagram. Ensure the tone is enthusiastic and informative, avoids jargon, and includes a call to action to visit our website. What are the key performance indicators (KPIs) this content should aim to influence?"
+            },
+            {
+                id: 3,
+                prompt: "You're an IT support technician. A new employee is having trouble with their virtual desktop interface, which is powered by a cloud-based AI. They describe it as 'slow and buggy.' You need to diagnose the problem effectively.",
+                originalPrompt: "You're an IT support technician. A new employee is having trouble with their virtual desktop interface, which is powered by a cloud-based AI. They describe it as 'slow and buggy.' You need to diagnose the problem effectively.",
+                idealQuestion: "Can you describe the exact steps you are taking when the virtual desktop feels 'slow and buggy,' including any error messages you see and the specific applications you are running? What is your current network connection speed and latency?"
+            },
+            {
+                id: 4,
+                prompt: "You're a product developer. Your team is considering integrating a new AI-driven recommendation engine into your e-commerce platform. You need to understand its potential impact on user experience and revenue.",
+                originalPrompt: "You're a product developer. Your team is considering integrating a new AI-driven recommendation engine into your e-commerce platform. You need to understand its potential impact on user experience and revenue.",
+                idealQuestion: "Based on similar e-commerce platforms, what is the projected uplift in average order value and user engagement we can expect by integrating this specific AI recommendation engine, and what are the primary data inputs it requires to optimize recommendations for our product catalog?"
+            },
+            {
+                id: 5,
+                prompt: "You're a data analyst. You've been given a large dataset to analyze for customer behavior patterns, but you suspect there might be biases in the data collection process. You need to ask a question that helps uncover these biases.",
+                originalPrompt: "You're a data analyst. You've been given a large dataset to analyze for customer behavior patterns, but you suspect there might be biases in the data collection process. You need to ask a question that helps uncover these biases.",
+                idealQuestion: "What was the demographic distribution of the users from whom this customer behavior dataset was collected, and what methods were used to ensure representative sampling across different user segments to avoid inherent biases?"
+            }
+        ];
+
+        // Color Palettes (selected shades for progress bar)
+        const colors = {
+            green: ['#098E00', '#35C03A', '#4BD957', '#6CFF82'], // Darkest to lightest
+            yellow: ['#FAD400', '#F9E700', '#F7FF00'],
+            orange: ['#FA4F00', '#FD874B', '#FFB387'],
+            red: ['#BB0000', '#E14B4B', '#FF8787'],
+            primaryBlue: {
+                dark: '#234F7A',
+                medium: '#4277A9',
+                light: '#68A9E4'
+            }
+        };
+
+        // Function to show an inline message box
+        function showInlineMessageBox(message, duration = 3000) {
+            inlineMessageBox.textContent = message;
+            inlineMessageBox.classList.add('show');
+            setTimeout(() => {
+                inlineMessageBox.classList.remove('show');
+            }, duration);
+        }
+
+        // Function to update the performance bar visually
+        function updatePerformanceBar() {
+            let barColor;
+
+            if (performanceScore >= 80) {
+                barColor = colors.green[0]; // Darkest green for Expert
+            } else if (performanceScore >= 60) {
+                barColor = colors.yellow[0]; // Darkest yellow for Advanced
+            } else if (performanceScore >= 40) {
+                barColor = colors.orange[0]; // Darkest orange for Intermediate
+            } else {
+                barColor = colors.red[0]; // Darkest red for Wrong
+            }
+
+            performanceBar.style.width = `${performanceScore}%`;
+            performanceBar.style.backgroundColor = barColor;
+        }
+
+        // Function to load the current scenario
+        function loadScenario() {
+            if (currentScenarioIndex < maxScenarios) {
+                const scenario = scenarios[currentScenarioIndex];
+                scenarioPromptElem.textContent = scenario.originalPrompt; // Load original prompt
+                scenarioCounterElem.textContent = currentScenarioIndex + 1;
+                totalScenariosElem.textContent = maxScenarios;
+                questionInput.value = ''; // Clear input for new scenario
+                // Reset submit button state
+                submitQuestionBtn.textContent = "Check My Question";
+                submitQuestionBtn.disabled = true; // Disable until input is typed
+                // Ensure Next Scenario is always visible and enabled
+                nextScenarioBtn.classList.remove('hidden');
+                nextScenarioBtn.disabled = false;
+                rephraseCount = 0; // Reset rephrase count for new scenario
+                rephraseScenarioBtn.disabled = false; // Enable rephrase button
+                scenarioTitleElem.textContent = "Scenario:"; // Reset scenario title
+            } else {
+                // All scenarios completed
+                scenarioPromptElem.textContent = "Congratulations! You've completed all the practice scenarios. Keep honing your questioning skills!";
+                questionInput.value = '';
+                questionInput.disabled = true;
+                submitQuestionBtn.classList.add('hidden'); // Hide Check My Question
+                clearAnswerBtn.classList.add('hidden'); // Hide Clear My Answer
+                rephraseScenarioBtn.classList.add('hidden'); // Hide Rephrase Scenario
+                nextScenarioBtn.classList.add('hidden'); // Hide Next Scenario
+                showInlineMessageBox("All scenarios completed! You can review your progress.", 5000);
+            }
+        }
+
+        // Function to update score based on E-Mentor rating
+        function updateScore(rating) {
+            switch (rating) {
+                case 'Expert':
+                    performanceScore = Math.min(100, performanceScore + 15); // Increase score
+                    break;
+                case 'Advanced':
+                    performanceScore = Math.min(100, performanceScore + 10);
+                    break;
+                case 'Intermediate':
+                    performanceScore = Math.max(0, performanceScore - 5); // Slight decrease
+                    break;
+                case 'Wrong':
+                    performanceScore = Math.max(0, performanceScore - 15); // Significant decrease
+                    break;
+                default:
+                    // No change or minor adjustment for unrecognized ratings
+                    break;
+            }
+            updatePerformanceBar();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial load
+            loadScenario();
+            updatePerformanceBar(); // Set initial bar state
+
+            // Enable/disable Check My Question button based on input
+            questionInput.addEventListener('input', () => {
+                submitQuestionBtn.disabled = questionInput.value.trim() === '';
+            });
+
+            // Handle Check My Question / Review Feedback button
+            submitQuestionBtn.addEventListener('click', async () => {
+                const userQuestion = questionInput.value.trim();
+                currentQuestion = userQuestion; // Store for reflection
+
+                if (submitQuestionBtn.textContent === "Review Feedback") {
+                    // If button says "Review Feedback", just open the modal
+                    feedbackModalScenario.textContent = scenarios[currentScenarioIndex].prompt;
+                    feedbackModalQuestion.textContent = currentQuestion;
+                    modalFeedbackRating.textContent = currentRating;
+                    modalFeedbackContent.innerHTML = currentFeedbackText.replace(/\n/g, '<br>');
+                    modalFeedbackTip.innerHTML = currentTipText.replace(/\n/g, '<br>');
+                    copyImmediateFeedbackBtn.disabled = false; // Ensure copy button is enabled when re-opening
+                    feedbackModal.classList.add('show');
+                    return; // Exit function
+                }
+
+                if (!userQuestion) {
+                    showInlineMessageBox("Please enter a question before submitting.");
+                    return;
+                }
+
+                // Show loading indicator
+                submitQuestionBtn.disabled = true;
+                loadingSpinner.classList.remove('hidden');
+                copyImmediateFeedbackBtn.disabled = true; // Disable copy feedback during processing
+
+                try {
+                    // --- RUBRIC FOR E-MENTOR FEEDBACK ---
+                    // A good question in the AI age propels us beyond surface-level information to uncover deeper insights,
+                    // biases, and opportunities, especially when interacting with AI, ML, and other sophisticated systems.
+                    //
+                    // Evaluation Criteria:
+                    // 1. Clarity & Precision:
+                    //    The question is clear, specific, and unambiguous. It avoids vague language and leads to a focused output.
+                    //    When interacting with AI, this means providing precise prompts rather than general inquiries.
+                    //    For system understanding, it involves breaking down complex issues into smaller, addressable sub-questions.
+                    //
+                    // 2. Significance & Relevance:
+                    //    The question is meaningful and directly related to the problem or project at hand.
+                    //    It filters out "noise" and avoids distractions, ensuring the inquiry genuinely contributes to the goal
+                    //    rather than leading to "analysis paralysis" or irrelevant rabbit holes.
+                    //
+                    // 3. Awareness of Assumptions & Biases:
+                    //    The question demonstrates an understanding that AI/ML models learn from data, which can carry human biases.
+                    //    It actively probes for underlying assumptions in data collection, algorithmic design, and potential biases
+                    //    embedded within the AI's training or the prompt itself. This includes being wary of "loaded questions."
+                    //
+                    // 4. Understanding of Limitations:
+                    //    The question reflects an awareness of what information is available (to both the questioner and the AI)
+                    //    and what is not. It distinguishes between questions that an AI can reliably answer and those requiring
+                    //    more human intervention, additional data, or a different approach. It helps identify knowledge gaps
+                    //    and prevents over-reliance on AI for tasks beyond its capabilities.
+                    // --- END RUBRIC ---
+
+                    const prompt = `You are an expert E-Mentor in critical thinking and AI interaction.
+                    Evaluate the user's question based on the following criteria:
+                    - Clarity & Precision
+                    - Significance & Relevance
+                    - Awareness of Assumptions & Biases
+                    - Understanding of Limitations
+
+                    Provide concise, to-the-point constructive feedback on the user's question in a section labeled "Feedback:". This feedback should directly reference the criteria above.
+                    Then, provide a single, actionable suggestion for improvement in a section labeled "Tip:".
+                    Finally, provide a single-word rating for the question from these options: "Expert", "Advanced", "Intermediate", "Wrong".
+
+                    Scenario: "${scenarios[currentScenarioIndex].prompt}"
+                    User Question: "${userQuestion}"
+
+                    Example Output Format:
+                    Feedback: Your question demonstrates good clarity and relevance. However, it could show more awareness of potential data biases.
+                    Tip: Maybe try this next time: Consider adding a phrase like 'What potential biases might be present in the training data?'
+                    Rating: Advanced`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                    const payload = { contents: chatHistory };
+                    // API Key: This is automatically provided by the Canvas environment at runtime.
+                    // You do NOT need to insert your API key here.
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const mentorResponseText = result.candidates[0].content.parts[0].text;
+
+                        // Parse the rating, feedback, and tip from the E-Mentor response
+                        let rating = 'Intermediate'; // Default rating
+                        let feedback = '';
+                        let tip = '';
+
+                        const feedbackMatch = mentorResponseText.match(/Feedback:\s*([\s\S]*?)(?=\nTip:|\nRating:|$)/i);
+                        if (feedbackMatch && feedbackMatch[1]) {
+                            feedback = feedbackMatch[1].trim();
+                        }
+
+                        const tipMatch = mentorResponseText.match(/Tip:\s*([\s\S]*?)(?=\nRating:|$)/i);
+                        if (tipMatch && tipMatch[1]) {
+                            tip = tipMatch[1].trim();
+                        }
+
+                        const ratingMatch = mentorResponseText.match(/Rating:\s*(Expert|Advanced|Intermediate|Wrong)/i);
+                        if (ratingMatch && ratingMatch[1]) {
+                            rating = ratingMatch[1].trim();
+                        }
+
+                        currentFeedbackText = feedback; // Store for reflection
+                        currentTipText = tip; // Store tip for reflection
+                        currentRating = rating; // Store rating for reflection
+
+                        // Populate and show the immediate feedback modal
+                        feedbackModalScenario.textContent = scenarios[currentScenarioIndex].prompt; // Add scenario
+                        feedbackModalQuestion.textContent = currentQuestion; // Add user question
+                        modalFeedbackRating.textContent = rating;
+                        modalFeedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
+                        modalFeedbackTip.innerHTML = tip.replace(/\n/g, '<br>');
+                        copyImmediateFeedbackBtn.disabled = false; // Enable copy button in modal
+                        feedbackModal.classList.add('show');
+
+                        updateScore(rating); // Update performance score based on rating
+
+                        // Change "Check My Question" to "Review Feedback"
+                        submitQuestionBtn.textContent = "Review Feedback";
+
+                    } else {
+                        console.error("Unexpected E-Mentor API response structure:", result);
+                        showInlineMessageBox("Failed to get feedback. Please try again.");
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching E-Mentor feedback:", error);
+                    showInlineMessageBox("An error occurred while getting feedback. Please check your network connection.");
+                } finally {
+                    // Hide loading indicator
+                    loadingSpinner.classList.add('hidden');
+                    submitQuestionBtn.disabled = false; // Always re-enable after attempt
+                }
+            });
+
+            // Handle Clear My Answer
+            clearAnswerBtn.addEventListener('click', () => {
+                questionInput.value = ''; // Clear input
+                submitQuestionBtn.textContent = "Check My Question"; // Reset button text
+                submitQuestionBtn.disabled = true; // Disable submit button
+                copyImmediateFeedbackBtn.disabled = true; // Disable copy feedback in modal
+                showInlineMessageBox("Your answer has been cleared. Please try again!", 3000);
+            });
+
+            // Handle Rephrase Scenario
+            rephraseScenarioBtn.addEventListener('click', async () => {
+                if (rephraseCount < MAX_REPHRASES) {
+                    rephraseCount++;
+                    rephraseScenarioBtn.disabled = true; // Disable during rephrase
+                    rephraseLoadingSpinner.classList.remove('hidden'); // Show spinner
+
+                    try {
+                        const originalScenario = scenarios[currentScenarioIndex].originalPrompt;
+                        const rephrasePrompt = `Rephrase the following scenario to make it easier to understand, but keep the core challenge and context intact. Provide only the rephrased text.
+
+                        Original Scenario: "${originalScenario}"`;
+
+                        let chatHistory = [];
+                        chatHistory.push({ role: "user", parts: [{ text: rephrasePrompt }] });
+
+                        const payload = { contents: chatHistory };
+                        // API Key: This is automatically provided by the Canvas environment at runtime.
+                        // You do NOT need to insert your API key here.
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const rephrasedText = result.candidates[0].content.parts[0].text;
+                            scenarios[currentScenarioIndex].prompt = rephrasedText; // Update current scenario prompt
+                            scenarioPromptElem.textContent = rephrasedText; // Display rephrased text
+                            scenarioTitleElem.textContent = "Rephrased Scenario:"; // Change title for visual cue
+                            showInlineMessageBox(`Scenario rephrased. You have ${MAX_REPHRASES - rephraseCount} rephrases left.`, 3000);
+                        } else {
+                            console.error("Unexpected rephrase API response structure:", result);
+                            showInlineMessageBox("Failed to rephrase scenario. Please try again.", 3000);
+                            // Revert rephrase count if API call failed
+                            rephraseCount--;
+                        }
+                    } catch (error) {
+                        console.error("Error rephrasing scenario:", error);
+                        showInlineMessageBox("An error occurred while rephrasing. Please check your network.", 3000);
+                        // Revert rephrase count if API call failed
+                        rephraseCount--;
+                    } finally {
+                        rephraseLoadingSpinner.classList.add('hidden'); // Hide spinner
+                        if (rephraseCount < MAX_REPHRASES) {
+                            rephraseScenarioBtn.disabled = false; // Re-enable if attempts left
+                        } else {
+                            rephraseScenarioBtn.disabled = true; // Keep disabled if max reached
+                        }
+                    }
+                } else {
+                    showInlineMessageBox("You have used all your rephrase attempts for this scenario.", 3000);
+                    rephraseScenarioBtn.disabled = true;
+                }
+            });
+
+            // Handle Next Scenario
+            nextScenarioBtn.addEventListener('click', () => {
+                currentScenarioIndex++;
+                loadScenario();
+            });
+
+            // Handle closing immediate feedback modal
+            closeFeedbackModalBtn.addEventListener('click', () => {
+                feedbackModal.classList.remove('show');
+            });
+
+            // Handle copying immediate feedback to clipboard (inside feedback modal)
+            copyImmediateFeedbackBtn.addEventListener('click', () => {
+                const originalButtonText = copyImmediateFeedbackBtn.textContent;
+                const originalButtonClass = copyImmediateFeedbackBtn.className;
+
+                const textToCopy = `
+Scenario: ${scenarios[currentScenarioIndex].prompt}
+
+Your Question: ${currentQuestion}
+
+E-Mentor Feedback: ${currentFeedbackText}
+
+Tip: ${currentTipText}
+                `.trim();
+
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    copyImmediateFeedbackBtn.textContent = "Copied!";
+                    copyImmediateFeedbackBtn.classList.add('copied-feedback');
+                    setTimeout(() => {
+                        copyImmediateFeedbackBtn.textContent = originalButtonText;
+                        copyImmediateFeedbackBtn.classList.remove('copied-feedback');
+                    }, 5000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    showInlineMessageBox("Failed to copy. Please copy manually.", 3000);
+                }
+                document.body.removeChild(textarea);
+            });
+        });
+    </script>
+</body>
+</html>

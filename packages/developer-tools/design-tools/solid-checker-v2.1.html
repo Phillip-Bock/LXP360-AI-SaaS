@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LXD360 WCAG 2.2 Color Contrast Checker v2.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        h1, h2, h3 {
+             font-family: 'Montserrat', sans-serif;
+        }
+        .rounded-lxd { border-radius: 10px; }
+        .color-button {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .color-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: grab;
+        }
+        .color-button:active {
+            cursor: grabbing;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .drop-zone.drag-over {
+            outline: 2px dashed #019ef3; /* Data Stream Blue */
+            outline-offset: 4px;
+            background-color: #eff6ff;
+        }
+        .preview-pane {
+            transition: background-color 0.3s ease;
+        }
+        .preview-pane h3, .preview-pane p {
+            transition: color 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-7xl mx-auto bg-white p-6 sm:p-8 rounded-lxd shadow-lg">
+
+        <!-- Header Section -->
+        <div class="text-center border-b pb-6 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#0056b8]">LXD360 WCAG 2.2 Color Contrast Checker v2.1</h1>
+            <p class="mt-3 text-base text-gray-600 max-w-3xl mx-auto">
+                At LXD360, our commitment to human-centered design means creating learning experiences that are accessible to everyone. We strive for <strong>WCAG 2.2 Level AAA</strong>, the highest standard of web accessibility. This tool ensures our color combinations provide sufficient contrast for readability, upholding our values of excellence and inclusivity.
+            </p>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="bg-[#F5F5F5] border text-[#232323] rounded-lxd p-4 mb-8">
+            <h2 class="font-bold text-lg mb-2">How to Use This Tool</h2>
+            <ol class="list-decimal list-inside space-y-1 text-base">
+                <li>Select a color family from each dropdown menu to generate draggable color buttons.</li>
+                <li>Drag a color and drop it into the "Text Color" or "Background Color" box.</li>
+                <li>Alternatively, use the color picker or type a hex code into the input fields.</li>
+                <li>Use the "Flip Colors" button to quickly swap your selections.</li>
+                <li>Click "Check Contrast" to see the ratio, rating, and a live preview.</li>
+                <li>If a combination doesn't meet AAA standards, use the "Suggest a Fix" button to find a compliant alternative.</li>
+            </ol>
+        </div>
+
+        <!-- Main Interaction Area -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Column 1: Color Selector -->
+            <div>
+                <label for="color-select-1" class="block font-medium text-gray-700 mb-2">Select Color Family 1</label>
+                <select id="color-select-1" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm focus:ring-[#019ef3] focus:border-[#019ef3]">
+                    <option selected disabled>Choose a color...</option>
+                </select>
+                <div id="color-palette-1" class="mt-4 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 min-h-[150px] p-2 bg-gray-50 rounded-lxd"></div>
+            </div>
+            <!-- Column 2: Color Selector -->
+            <div>
+                <label for="color-select-2" class="block font-medium text-gray-700 mb-2">Select Color Family 2</label>
+                <select id="color-select-2" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm focus:ring-[#019ef3] focus:border-[#019ef3]">
+                    <option selected disabled>Choose a color...</option>
+                </select>
+                <div id="color-palette-2" class="mt-4 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 min-h-[150px] p-2 bg-gray-50 rounded-lxd"></div>
+            </div>
+        </div>
+
+        <!-- Drop Zone, Results, and Preview Section -->
+        <div class="mt-10 pt-8 border-t">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <!-- Drop Zones & Inputs -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                        <input type="color" id="color-picker-1" class="w-10 h-10 border-none cursor-pointer" value="#232323">
+                        <input type="text" id="hex-input-1" placeholder="#232323" class="font-mono p-2 border border-gray-300 rounded-lxd w-full">
+                    </div>
+                    <div id="drop-zone-1" class="drop-zone h-24 flex items-center justify-center border-2 border-dashed rounded-lxd bg-gray-50 transition-all">
+                        <span class="text-gray-500">Drop Text Color Here</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="color" id="color-picker-2" class="w-10 h-10 border-none cursor-pointer" value="#F5F5F5">
+                        <input type="text" id="hex-input-2" placeholder="#F5F5F5" class="font-mono p-2 border border-gray-300 rounded-lxd w-full">
+                    </div>
+                    <div id="drop-zone-2" class="drop-zone h-24 flex items-center justify-center border-2 border-dashed rounded-lxd bg-gray-50 transition-all">
+                        <span class="text-gray-500">Drop Background Color Here</span>
+                    </div>
+                    <button id="flip-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lxd shadow transition-colors flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l-4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/></svg>
+                        Flip Colors
+                    </button>
+                </div>
+                <!-- Results & Preview -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div id="results-container" class="text-center bg-gray-100 p-4 rounded-lxd min-h-[96px] flex flex-col justify-center">
+                        <p class="text-gray-600">Results will appear here.</p>
+                    </div>
+                    <div id="preview-pane" class="preview-pane p-6 rounded-lxd border bg-white">
+                        <h3 class="text-2xl font-bold">Live Preview Heading</h3>
+                        <p class="mt-2 text-base">This is a sample paragraph. The quick brown fox jumps over the lazy dog. This text allows you to see the color combination in a real-world context to judge readability and aesthetic appeal for yourself.</p>
+                    </div>
+                    <div id="accessibility-context" class="text-base text-gray-600 p-4 bg-gray-50 rounded-lxd min-h-[60px]"></div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 pt-6 border-t flex flex-wrap justify-center gap-4">
+                <button id="submit-btn" class="bg-[#0056b8] hover:bg-[#019ef3] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Check Contrast</button>
+                <button id="suggest-fix-btn" class="hidden bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Suggest a Fix</button>
+                <button id="copy-css-btn" class="hidden bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Copy CSS</button>
+                <button id="clear-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Clear Fields</button>
+                <button id="reset-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Reset All</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const colorPalettes = {
+            "LXD360 Primary Blue": ["#C2DEFF", "#99C9FF", "#70B3FF", "#479DFF", "#1F87FF", "#0072F5", "#0056B8", "#00438F", "#003066", "#001D3D"],
+            "LXD360 Secondary Blue": ["#EBF8FF", "#AEE2FF", "#9ADBFE", "#71CDFE", "#34B7FE", "#20B0FE", "#019EF3", "#0184CB", "#016AA2", "#014F7A"],
+            "LXD360 Black": ["#707070", "#666666", "#5C5C5C", "#525252", "#474747", "#3D3D3D", "#333333", "#292929", "#232323", "#000000"],
+            "LXD360 White": ["#FFFFFF", "#F5F5F5", "#EBEBEB", "#E0E0E0", "#D6D6D6", "#CCCCCC", "#C2C2C2", "#B8B8B8", "#ADADAD", "#A3A3A3"],
+            "LXD360 Orange": ["#FFB685", "#FFA970", "#FF9D5C", "#FF9147", "#FF8533", "#FF781F", "#F56200", "#CC5200", "#A34100", "#7A3100"],
+            "LXD360 Yellow": ["#FFDE85", "#FFD970", "#FFD35C", "#FFCE47", "#FFC933", "#FFC31F", "#FFBE0A", "#E0A500", "#B88700", "#8F6900"],
+            "LXD360 Green": ["#A5F88B", "#87F665", "#78F551", "#69F43E", "#4BF218", "#3AD20C", "#30AE0A", "#268708", "#1B6006", "#103A03"],
+            "LXD360 Red": ["#FD9B9B", "#FC7373", "#FB4B4B", "#FB3737", "#FA0F0F", "#DC0404", "#A60303", "#8C0303", "#640202", "#3C0101"],
+            "LXD360 Purple": ["#BA23FB", "#B40FFA", "#A905F0", "#9B04DC", "#8D04C8", "#7F04B4", "#7103A0", "#63028D", "#550278", "#43025F"],
+            "LXD360 Magenta": ["#FC9CEC", "#FB74E5", "#FA4CDD", "#F924D6", "#EF06C8", "#C705A7", "#9F0485", "#770364", "#500243", "#280121"],
+            "LXD360 Pink": ["#F1A7DF", "#EC83D2", "#E972CB", "#E660C5", "#E34FBE", "#E13DB8", "#DE2BB1", "#D421A7", "#C21E99", "#A41A81"],
+            "LXD360 Brown": ["#DA6207", "#C65906", "#B25006", "#9E4705", "#8B3E04", "#773604", "#632D03", "#4F2402", "#3B1B02", "#231001"]
+        };
+        const allColors = Object.values(colorPalettes).flat();
+        let draggedColor = null;
+        let textColor = '#232323';
+        let bgColor = '#F5F5F5';
+
+        const [select1, select2, palette1, palette2, dropZone1, dropZone2, submitBtn, clearBtn, resetBtn, resultsContainer, flipBtn, colorPicker1, hexInput1, colorPicker2, hexInput2, previewPane, accessibilityContext, suggestFixBtn, copyCssBtn] = [
+            'color-select-1', 'color-select-2', 'color-palette-1', 'color-palette-2', 'drop-zone-1', 'drop-zone-2', 'submit-btn', 'clear-btn', 'reset-btn', 'results-container', 'flip-btn', 'color-picker-1', 'hex-input-1', 'color-picker-2', 'hex-input-2', 'preview-pane', 'accessibility-context', 'suggest-fix-btn', 'copy-css-btn'
+        ].map(id => document.getElementById(id));
+        
+        const previewHeader = previewPane.querySelector('h3');
+        const previewParagraph = previewPane.querySelector('p');
+
+        function populateDropdowns() {
+            Object.keys(colorPalettes).forEach(name => {
+                [select1, select2].forEach(sel => sel.add(new Option(name, name)));
+            });
+        }
+
+        function generatePalette(paletteName, container) {
+            container.innerHTML = '';
+            const colors = colorPalettes[paletteName];
+            if (!colors) return;
+            colors.forEach(hex => {
+                const button = document.createElement('div');
+                button.className = 'color-button w-full h-12 rounded-lxd flex items-center justify-center text-xs font-mono shadow';
+                button.style.backgroundColor = hex;
+                button.style.color = getLuminance(hex) > 0.5 ? '#000000' : '#FFFFFF';
+                button.textContent = hex.toUpperCase();
+                button.draggable = true;
+                button.addEventListener('dragstart', (e) => {
+                    draggedColor = hex;
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+                container.appendChild(button);
+            });
+        }
+
+        function updateDropZone(zoneNumber, color) {
+            const dropZone = zoneNumber === 1 ? dropZone1 : dropZone2;
+            const hexInput = zoneNumber === 1 ? hexInput1 : hexInput2;
+            const colorPicker = zoneNumber === 1 ? colorPicker1 : colorPicker2;
+            
+            if (!isValidHex(color)) return;
+
+            dropZone.innerHTML = `<span class="font-mono font-bold">${color.toUpperCase()}</span>`;
+            dropZone.style.backgroundColor = color;
+            dropZone.style.color = getLuminance(color) > 0.5 ? '#000000' : '#FFFFFF';
+            hexInput.value = color.toUpperCase();
+            colorPicker.value = color;
+
+            if (zoneNumber === 1) textColor = color;
+            else bgColor = color;
+        }
+
+        function handleDrop(e, zoneNumber) {
+            e.preventDefault();
+            if (!draggedColor) return;
+            updateDropZone(zoneNumber, draggedColor);
+            draggedColor = null;
+            e.target.closest('.drop-zone').classList.remove('drag-over');
+        }
+
+        function isValidHex(hex) {
+            return /^#[0-9A-F]{6}$/i.test(hex);
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+        }
+
+        function getLuminance(hex) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return 0;
+            const [r, g, b] = rgb.map(c => {
+                const sRGB = c / 255;
+                return sRGB <= 0.03928 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        function getContrastRatio(hex1, hex2) {
+            const lum1 = getLuminance(hex1);
+            const lum2 = getLuminance(hex2);
+            return (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
+        }
+
+        function getWcagRating(ratio) {
+            if (ratio >= 7) return { level: 'AAA', color: 'bg-green-500', text: 'text-white', context: "<strong>Excellent contrast!</strong> This combination is highly readable and provides a comfortable experience for all users, meeting the highest standard of accessibility." };
+            if (ratio >= 4.5) return { level: 'AA', color: 'bg-yellow-500', text: 'text-black', context: "<strong>Good contrast.</strong> This combination is acceptable for most text, including body copy. Consider a higher contrast for maximum readability." };
+            return { level: 'Fail', color: 'bg-red-600', text: 'text-white', context: "<strong>Insufficient contrast.</strong> This combination is difficult to read for many users, especially those with visual impairments. It should not be used for text." };
+        }
+        
+        function updatePreview() {
+            previewPane.style.backgroundColor = bgColor;
+            previewHeader.style.color = textColor;
+            previewParagraph.style.color = textColor;
+        }
+
+        function handleCheckContrast() {
+            if (!textColor || !bgColor) {
+                resultsContainer.innerHTML = `<p class="text-red-600 font-semibold">Please provide a valid color for both Text and Background.</p>`;
+                return;
+            }
+            const ratio = getContrastRatio(textColor, bgColor);
+            const rating = getWcagRating(ratio);
+
+            resultsContainer.innerHTML = `
+                <div class="flex items-center justify-center gap-4">
+                    <div><p class="text-sm text-gray-600">Contrast Ratio</p><p class="text-3xl font-bold text-[#0056b8]">${ratio.toFixed(2)}:1</p></div>
+                    <div><p class="text-sm text-gray-600">WCAG 2.2 Rating</p><p class="text-xl font-bold px-3 py-1 rounded-full ${rating.color} ${rating.text}">${rating.level}</p></div>
+                </div>`;
+            
+            accessibilityContext.innerHTML = rating.context;
+            updatePreview();
+
+            if (rating.level !== 'AAA') {
+                suggestFixBtn.classList.remove('hidden');
+            } else {
+                suggestFixBtn.classList.add('hidden');
+            }
+            copyCssBtn.classList.remove('hidden');
+        }
+
+        function handleFlipColors() {
+            const tempColor = textColor;
+            updateDropZone(1, bgColor);
+            updateDropZone(2, tempColor);
+            handleCheckContrast();
+        }
+
+        function handleSuggestFix() {
+            const isTextLighter = getLuminance(textColor) > getLuminance(bgColor);
+            let bestColor = isTextLighter ? textColor : bgColor;
+            let fixedColor = isTextLighter ? bgColor : textColor;
+            let bestRatio = getContrastRatio(bestColor, fixedColor);
+            let suggestion = null;
+
+            for (const color of allColors) {
+                const newRatio = getContrastRatio(color, fixedColor);
+                if (newRatio >= 7) {
+                    suggestion = color;
+                    break;
+                }
+                if (newRatio > bestRatio) {
+                    bestRatio = newRatio;
+                    bestColor = color;
+                }
+            }
+            
+            if (!suggestion) suggestion = bestColor;
+
+            if (isTextLighter) updateDropZone(1, suggestion);
+            else updateDropZone(2, suggestion);
+            
+            handleCheckContrast();
+        }
+
+        function handleCopyCss() {
+            const css = `color: ${textColor.toUpperCase()};\nbackground-color: ${bgColor.toUpperCase()};`;
+            const textarea = document.createElement('textarea');
+            textarea.value = css;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            copyCssBtn.textContent = 'Copied!';
+            setTimeout(() => { copyCssBtn.textContent = 'Copy CSS'; }, 2000);
+        }
+
+        function handleClearFields() {
+            textColor = null;
+            bgColor = null;
+            [dropZone1, dropZone2].forEach((zone, i) => {
+                zone.innerHTML = `<span class="text-gray-500">Drop ${i === 0 ? 'Text' : 'Background'} Color Here</span>`;
+                zone.style.backgroundColor = '#f9fafb';
+                zone.style.color = '#6b7280';
+            });
+            hexInput1.value = '';
+            hexInput2.value = '';
+        }
+
+        function handleResetAll() {
+            handleClearFields();
+            select1.selectedIndex = 0;
+            select2.selectedIndex = 0;
+            palette1.innerHTML = '';
+            palette2.innerHTML = '';
+            resultsContainer.innerHTML = '<p class="text-gray-600">Results will appear here.</p>';
+            accessibilityContext.innerHTML = '';
+            suggestFixBtn.classList.add('hidden');
+            copyCssBtn.classList.add('hidden');
+            updateDropZone(1, '#232323');
+            updateDropZone(2, '#F5F5F5');
+            updatePreview();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDropdowns();
+            updateDropZone(1, textColor);
+            updateDropZone(2, bgColor);
+            updatePreview();
+
+            select1.addEventListener('change', () => generatePalette(select1.value, palette1));
+            select2.addEventListener('change', () => generatePalette(select2.value, palette2));
+            [dropZone1, dropZone2].forEach((zone, index) => {
+                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); e.dataTransfer.dropEffect = 'copy'; });
+                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+                zone.addEventListener('drop', (e) => handleDrop(e, index + 1));
+            });
+            [colorPicker1, hexInput1].forEach(el => el.addEventListener('input', (e) => updateDropZone(1, e.target.value)));
+            [colorPicker2, hexInput2].forEach(el => el.addEventListener('input', (e) => updateDropZone(2, e.target.value)));
+            
+            submitBtn.addEventListener('click', handleCheckContrast);
+            clearBtn.addEventListener('click', handleClearFields);
+            resetBtn.addEventListener('click', handleResetAll);
+            flipBtn.addEventListener('click', handleFlipColors);
+            suggestFixBtn.addEventListener('click', handleSuggestFix);
+            copyCssBtn.addEventListener('click', handleCopyCss);
+        });
+    </script>
+</body>
+</html>

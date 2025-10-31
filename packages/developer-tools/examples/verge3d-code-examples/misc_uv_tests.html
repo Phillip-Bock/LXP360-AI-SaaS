@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D - uv mapping tests</title>
+    <meta charset=utf-8 />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        background: #ffffff;
+        color: #000000;
+        text-align: center;
+        font-family: sans-serif;
+      }
+      h3 {
+        margin-top: 60px;
+        margin-bottom: 30px;
+        font-weight: normal;
+      }
+      canvas {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+
+      import { UVsDebug } from 'v3d/addons/utils/UVsDebug.js';
+
+      /*
+       * This is to help debug UVs problems in geometry,
+       * as well as allow a new user to visualize what UVs are about.
+       */
+
+      function test(name, geometry) {
+
+        const d = document.createElement('div');
+
+        d.innerHTML = '<h3>' + name + '</h3>';
+
+        d.appendChild(UVsDebug(geometry));
+
+        document.body.appendChild(d);
+
+      }
+
+      const points = [];
+
+      for (let i = 0; i < 10; i++) {
+
+        points.push(new v3d.Vector2(Math.sin(i * 0.2) * 15 + 50, (i - 5) * 2));
+
+      }
+
+      //
+
+      test('new v3d.PlaneGeometry(100, 100, 4, 4)', new v3d.PlaneGeometry(100, 100, 4, 4));
+
+      test('new v3d.SphereGeometry(75, 12, 6)', new v3d.SphereGeometry(75, 12, 6));
+
+      test('new v3d.IcosahedronGeometry(30, 1)', new v3d.IcosahedronGeometry(30, 1));
+
+      test('new v3d.OctahedronGeometry(30, 2)', new v3d.OctahedronGeometry(30, 2));
+
+      test('new v3d.CylinderGeometry(25, 75, 100, 10, 5)', new v3d.CylinderGeometry(25, 75, 100, 10, 5));
+
+      test('new v3d.BoxGeometry(100, 100, 100, 4, 4, 4)', new v3d.BoxGeometry(100, 100, 100, 4, 4, 4));
+
+      test('new v3d.LatheGeometry(points, 8)', new v3d.LatheGeometry(points, 8));
+
+      test('new v3d.TorusGeometry(50, 20, 8, 8)', new v3d.TorusGeometry(50, 20, 8, 8));
+
+      test('new v3d.TorusKnotGeometry(50, 10, 12, 6)', new v3d.TorusKnotGeometry(50, 10, 12, 6));
+
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(awk:*)",
+      "Bash(pnpm dev)",
+      "Bash(curl:*)",
+      "Bash(pnpm install:*)",
+      "Bash(cp:*)",
+      "WebSearch",
+      "Bash(pnpm add:*)",
+      "Bash(python:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npx next lint:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 20 cmd /c \"for /L %i in (1,1,20) do @(curl -s -o nul -w \"\"%%{http_code}\"\" http://localhost:3002/branding/light-example && exit /b 0 || timeout /t 1 /nobreak >nul)\")",
+      "Bash(ping:*)",
+      "Bash(nul)",
+      "Bash(dir:*)",
+      "Bash(timeout:*)",
+      "Bash(where /r . .git 2)",
+      "Bash(powershell -Command:*)",
+      "Bash(test:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

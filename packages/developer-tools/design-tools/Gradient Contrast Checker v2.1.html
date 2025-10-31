@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LXD360 WCAG 2.2 Gradient Contrast Checker v2.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        h1, h2, h3 {
+             font-family: 'Montserrat', sans-serif;
+        }
+        .rounded-lxd { border-radius: 10px; }
+        .color-button {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: grab;
+        }
+        .color-button:active { cursor: grabbing; }
+        .gradient-stop-drop-zone, .text-color-drop-zone {
+            transition: all 0.2s ease;
+        }
+        .drag-over {
+            outline: 2px dashed #019ef3;
+            outline-offset: 4px;
+            transform: scale(1.05);
+        }
+        .preview-pane {
+            background-size: cover;
+            background-repeat: no-repeat;
+            transition: background-image 0.4s ease;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #d1d5db;
+            border-radius: 5px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #0056b8;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-7xl mx-auto bg-white p-6 sm:p-8 rounded-lxd shadow-lg">
+
+        <!-- Header Section -->
+        <div class="text-center border-b pb-6 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#0056b8]">LXD360 WCAG 2.2 Gradient Contrast Checker v2.1</h1>
+            <p class="mt-3 text-base text-gray-600 max-w-3xl mx-auto">
+                Text on gradients presents a unique accessibility challenge. This tool helps ensure readability by finding the point of lowest contrast in a gradient and verifying it meets our <strong>WCAG 2.2 Level AAA</strong> standard.
+            </p>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="bg-[#F5F5F5] text-[#232323] border rounded-lxd p-4 mb-8">
+            <h2 class="font-bold text-lg mb-2">How to Use This Tool</h2>
+            <ol class="list-decimal list-inside space-y-1 text-base">
+                <li>Select color families to generate draggable color buttons.</li>
+                <li>Drag a color to the "Text Color" box.</li>
+                <li>Drag <strong>2 to 5 colors</strong> into the "Gradient Stop" boxes to build your gradient.</li>
+                <li>Use the sliders to adjust the position (0% to 100%) of each color in the gradient.</li>
+                <li>Choose the gradient type (Linear/Radial) and direction.</li>
+                <li>Click "Check Contrast" to analyze the combination.</li>
+                <li>If it fails, use "Suggest a Fix" and choose to adjust the text or the gradient. The fix will only use colors from your selected palettes.</li>
+            </ol>
+            <p class="text-sm mt-3 pt-3 border-t"><strong>Note on Images:</strong> For text over an image, the best practice is to place a semi-transparent solid color overlay behind the text. Use our standard Color Contrast Checker to test your text against that overlay color.</p>
+        </div>
+
+        <!-- Main Interaction Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Color Palettes -->
+            <div class="lg:col-span-4">
+                <h3 class="font-bold text-lg text-gray-800 mb-2">1. Select Color Palettes</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="text-color-select" class="block font-medium text-gray-700 mb-1">Text Color Family</label>
+                        <select id="text-color-select" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm"></select>
+                        <div id="text-color-palette" class="mt-2 grid grid-cols-5 gap-2 p-2 bg-gray-50 rounded-lxd min-h-[50px]"></div>
+                    </div>
+                    <div>
+                        <label for="gradient-color-select" class="block font-medium text-gray-700 mb-1">Gradient Color Family</label>
+                        <select id="gradient-color-select" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm"></select>
+                        <div id="gradient-color-palette" class="mt-2 grid grid-cols-5 gap-2 p-2 bg-gray-50 rounded-lxd min-h-[50px]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column: Selections -->
+            <div class="lg:col-span-3">
+                <h3 class="font-bold text-lg text-gray-800 mb-2">2. Build Your Combination</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Text Color</label>
+                        <div id="text-color-drop-zone" class="text-color-drop-zone h-16 flex items-center justify-center border-2 border-dashed rounded-lxd bg-gray-50">
+                            <span class="text-gray-500">Drop Here</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Gradient Stops & Positions</label>
+                        <div id="gradient-stops-container" class="space-y-2">
+                            <!-- Gradient stops will be generated here -->
+                        </div>
+                    </div>
+                    <div>
+                        <label for="gradient-type" class="block font-medium text-gray-700 mb-1">Gradient Type</label>
+                        <select id="gradient-type" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm">
+                            <option value="linear">Linear</option>
+                            <option value="radial">Radial</option>
+                        </select>
+                    </div>
+                     <div id="linear-direction-control">
+                        <label for="gradient-direction" class="block font-medium text-gray-700 mb-1">Linear Direction (<span id="direction-value">90</span>°)</label>
+                        <input type="range" id="gradient-direction" min="0" max="360" value="90" class="w-full">
+                    </div>
+                    <div id="radial-position-control" class="hidden">
+                        <label for="radial-position" class="block font-medium text-gray-700 mb-1">Radial Position</label>
+                        <select id="radial-position" class="w-full p-2 border border-gray-300 rounded-lxd shadow-sm">
+                            <option value="circle at center">Center</option>
+                            <option value="circle at top">Top</option>
+                            <option value="circle at bottom">Bottom</option>
+                            <option value="circle at left">Left</option>
+                            <option value="circle at right">Right</option>
+                            <option value="circle at top left">Top Left</option>
+                            <option value="circle at top right">Top Right</option>
+                            <option value="circle at bottom left">Bottom Left</option>
+                            <option value="circle at bottom right">Bottom Right</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results & Preview -->
+            <div class="lg:col-span-5">
+                 <h3 class="font-bold text-lg text-gray-800 mb-2">3. Analyze Results</h3>
+                <div class="space-y-4">
+                    <div id="results-container" class="text-center bg-gray-100 p-4 rounded-lxd min-h-[96px] flex flex-col justify-center">
+                        <p class="text-gray-600">Results will appear here.</p>
+                    </div>
+                    <div id="preview-pane" class="preview-pane p-6 rounded-lxd border h-48 flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold">Live Preview</h3>
+                        <p class="mt-2 text-base">The quick brown fox jumps over the lazy dog.</p>
+                    </div>
+                    <div id="accessibility-context" class="text-base text-gray-600 p-4 bg-gray-50 rounded-lxd min-h-[60px]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 pt-6 border-t flex flex-wrap justify-center gap-4">
+            <button id="submit-btn" class="bg-[#0056b8] hover:bg-[#019ef3] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Check Contrast</button>
+            <button id="suggest-fix-btn" class="hidden bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Suggest a Fix</button>
+            <div id="fix-options-container" class="hidden flex flex-wrap justify-center gap-4">
+                 <button id="suggest-text-fix-btn" class="bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow">Fix Text Color</button>
+                 <button id="suggest-gradient-fix-btn" class="bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow">Fix Gradient</button>
+            </div>
+            <button id="copy-css-btn" class="hidden bg-[#f56200] hover:bg-[#CC5200] text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Copy CSS</button>
+            <button id="reset-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lxd shadow transition-colors">Reset All</button>
+        </div>
+    </div>
+
+    <script>
+        const colorPalettes = {
+            "LXD360 Primary Blue": ["#C2DEFF", "#99C9FF", "#70B3FF", "#479DFF", "#1F87FF", "#0072F5", "#0056B8", "#00438F", "#003066", "#001D3D"],
+            "LXD360 Secondary Blue": ["#EBF8FF", "#AEE2FF", "#9ADBFE", "#71CDFE", "#34B7FE", "#20B0FE", "#019EF3", "#0184CB", "#016AA2", "#014F7A"],
+            "LXD360 Black": ["#707070", "#666666", "#5C5C5C", "#525252", "#474747", "#3D3D3D", "#333333", "#292929", "#232323", "#000000"],
+            "LXD360 White": ["#FFFFFF", "#F5F5F5", "#EBEBEB", "#E0E0E0", "#D6D6D6", "#CCCCCC", "#C2C2C2", "#B8B8B8", "#ADADAD", "#A3A3A3"],
+            "LXD360 Orange": ["#FFB685", "#FFA970", "#FF9D5C", "#FF9147", "#FF8533", "#FF781F", "#F56200", "#CC5200", "#A34100", "#7A3100"],
+            "LXD360 Yellow": ["#FFDE85", "#FFD970", "#FFD35C", "#FFCE47", "#FFC933", "#FFC31F", "#FFBE0A", "#E0A500", "#B88700", "#8F6900"],
+            "LXD360 Green": ["#A5F88B", "#87F665", "#78F551", "#69F43E", "#4BF218", "#3AD20C", "#30AE0A", "#268708", "#1B6006", "#103A03"],
+            "LXD360 Red": ["#FD9B9B", "#FC7373", "#FB4B4B", "#FB3737", "#FA0F0F", "#DC0404", "#A60303", "#8C0303", "#640202", "#3C0101"],
+            "LXD360 Purple": ["#BA23FB", "#B40FFA", "#A905F0", "#9B04DC", "#8D04C8", "#7F04B4", "#7103A0", "#63028D", "#550278", "#43025F"],
+            "LXD360 Magenta": ["#FC9CEC", "#FB74E5", "#FA4CDD", "#F924D6", "#EF06C8", "#C705A7", "#9F0485", "#770364", "#500243", "#280121"],
+            "LXD360 Pink": ["#F1A7DF", "#EC83D2", "#E972CB", "#E660C5", "#E34FBE", "#E13DB8", "#DE2BB1", "#D421A7", "#C21E99", "#A41A81"],
+            "LXD360 Brown": ["#DA6207", "#C65906", "#B25006", "#9E4705", "#8B3E04", "#773604", "#632D03", "#4F2402", "#3B1B02", "#231001"]
+        };
+        const allColors = Object.values(colorPalettes).flat();
+
+        let draggedColor = null;
+        let textColor = null;
+        let gradientStops = Array(5).fill(null).map((_, i) => ({ color: null, position: i * 25 }));
+
+        const elements = {};
+        ['textColorSelect', 'textColorPalette', 'gradientColorSelect', 'gradientColorPalette', 'textColorDropZone', 'gradientStopsContainer', 'gradientType', 'gradientDirection', 'directionValue', 'linearDirectionControl', 'radialPositionControl', 'radialPosition', 'resultsContainer', 'previewPane', 'accessibilityContext', 'submitBtn', 'suggestFixBtn', 'fixOptionsContainer', 'suggestTextFixBtn', 'suggestGradientFixBtn', 'copyCssBtn', 'resetBtn'].forEach(id => {
+            elements[id] = document.getElementById(id.replace(/([A-Z])/g, "-$1").toLowerCase());
+        });
+
+        const hexToRgb = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        };
+        const getLuminance = (hex) => {
+            if(!hex) return 0;
+            const rgb = hexToRgb(hex);
+            if (!rgb) return 0;
+            const [r, g, b] = Object.values(rgb).map(c => {
+                const sRGB = c / 255;
+                return sRGB <= 0.03928 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        };
+        const getContrastRatio = (hex1, hex2) => {
+            const lum1 = getLuminance(hex1);
+            const lum2 = getLuminance(hex2);
+            return (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
+        };
+        const populateDropdowns = () => {
+            Object.keys(colorPalettes).forEach(name => {
+                [elements.textColorSelect, elements.gradientColorSelect].forEach(sel => sel.add(new Option(name, name)));
+            });
+        };
+        const generatePalette = (paletteName, container) => {
+            container.innerHTML = '';
+            (colorPalettes[paletteName] || []).forEach(hex => {
+                const button = document.createElement('div');
+                button.className = 'color-button w-full h-10 rounded-lxd flex items-center justify-center text-xs font-mono shadow-sm';
+                button.style.backgroundColor = hex;
+                button.style.color = getLuminance(hex) > 0.5 ? '#000' : '#FFF';
+                button.textContent = hex.toUpperCase();
+                button.draggable = true;
+                button.addEventListener('dragstart', (e) => {
+                    draggedColor = hex;
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+                container.appendChild(button);
+            });
+        };
+        const createGradientStopZones = () => {
+            elements.gradientStopsContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const stopWrapper = document.createElement('div');
+                stopWrapper.className = 'space-y-1';
+                const stop = document.createElement('div');
+                stop.id = `gradient-stop-${i}`;
+                stop.className = 'gradient-stop-drop-zone h-12 flex items-center justify-center border-2 border-dashed rounded-lxd bg-gray-50';
+                stop.innerHTML = `<span class="text-gray-400">Stop ${i + 1}</span>`;
+                
+                const sliderContainer = document.createElement('div');
+                sliderContainer.className = 'hidden items-center gap-2';
+                sliderContainer.id = `slider-container-${i}`;
+                
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.id = `slider-${i}`;
+                slider.min = 0;
+                slider.max = 100;
+                slider.value = gradientStops[i].position;
+                slider.className = 'w-full';
+                
+                const sliderValue = document.createElement('span');
+                sliderValue.id = `slider-value-${i}`;
+                sliderValue.className = 'text-xs font-mono w-10 text-right';
+                sliderValue.textContent = `${slider.value}%`;
+
+                slider.addEventListener('input', (e) => {
+                    gradientStops[i].position = parseInt(e.target.value);
+                    sliderValue.textContent = `${e.target.value}%`;
+                });
+                
+                sliderContainer.appendChild(slider);
+                sliderContainer.appendChild(sliderValue);
+                stopWrapper.appendChild(stop);
+                stopWrapper.appendChild(sliderContainer);
+                elements.gradientStopsContainer.appendChild(stopWrapper);
+                addDropListeners(stop, i);
+            }
+        };
+        const addDropListeners = (el, index) => {
+            el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+            el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+            el.addEventListener('drop', e => {
+                e.preventDefault();
+                el.classList.remove('drag-over');
+                if (draggedColor) {
+                    if (index === 'text') {
+                        textColor = draggedColor;
+                        el.innerHTML = `<span class="font-mono font-bold">${textColor.toUpperCase()}</span>`;
+                        el.style.backgroundColor = textColor;
+                        el.style.color = getLuminance(textColor) > 0.5 ? '#000' : '#FFF';
+                    } else {
+                        gradientStops[index].color = draggedColor;
+                        updateGradientStopUI(index);
+                    }
+                }
+                draggedColor = null;
+            });
+        };
+
+        const updateGradientStopUI = (index) => {
+            const stop = document.getElementById(`gradient-stop-${index}`);
+            const sliderContainer = document.getElementById(`slider-container-${index}`);
+            const slider = document.getElementById(`slider-${index}`);
+            const sliderValue = document.getElementById(`slider-value-${index}`);
+            const color = gradientStops[index].color;
+            const position = gradientStops[index].position;
+
+            if (color) {
+                stop.innerHTML = `<span class="font-mono font-bold">${color.toUpperCase()}</span>`;
+                stop.style.backgroundColor = color;
+                stop.style.color = getLuminance(color) > 0.5 ? '#000' : '#FFF';
+                slider.value = position;
+                sliderValue.textContent = `${position}%`;
+                sliderContainer.classList.remove('hidden');
+                sliderContainer.classList.add('flex');
+            } else {
+                stop.innerHTML = `<span class="text-gray-400">Stop ${index + 1}</span>`;
+                stop.style.backgroundColor = '';
+                sliderContainer.classList.add('hidden');
+                sliderContainer.classList.remove('flex');
+            }
+        };
+
+        const findMinContrastInGradient = (textHex, stops) => {
+            let minRatio = Infinity;
+            let worstColor = stops[0].color;
+            const sortedStops = [...stops].sort((a,b) => a.position - b.position);
+
+            for (let i = 0; i < sortedStops.length - 1; i++) {
+                const start = sortedStops[i];
+                const end = sortedStops[i+1];
+                const startRgb = hexToRgb(start.color);
+                const endRgb = hexToRgb(end.color);
+
+                for (let p = 0; p <= 100; p++) {
+                    const percent = p / 100;
+                    const interpolatedRgb = {
+                        r: Math.round(startRgb.r * (1 - percent) + endRgb.r * percent),
+                        g: Math.round(startRgb.g * (1 - percent) + endRgb.g * percent),
+                        b: Math.round(startRgb.b * (1 - percent) + endRgb.b * percent)
+                    };
+                    const bgHex = `#${((1 << 24) + (interpolatedRgb.r << 16) + (interpolatedRgb.g << 8) + interpolatedRgb.b).toString(16).slice(1).toUpperCase()}`;
+                    const ratio = getContrastRatio(textHex, bgHex);
+                    if (ratio < minRatio) {
+                        minRatio = ratio;
+                        worstColor = (getContrastRatio(textHex, start.color) < getContrastRatio(textHex, end.color)) ? start.color : end.color;
+                    }
+                }
+            }
+            return { minRatio, worstColor };
+        };
+
+        const generateCssGradient = (stops) => {
+            const type = elements.gradientType.value;
+            const direction = type === 'linear' ? `${elements.gradientDirection.value}deg` : elements.radialPosition.value;
+            const stopsString = [...stops].sort((a,b) => a.position - b.position).map(stop => `${stop.color} ${stop.position}%`).join(', ');
+            return `${type}-gradient(${direction}, ${stopsString})`;
+        };
+
+        const handleCheckContrast = () => {
+            elements.suggestFixBtn.classList.add('hidden');
+            elements.fixOptionsContainer.classList.add('hidden');
+            const activeStops = gradientStops.filter(s => s.color);
+            if (!textColor || activeStops.length < 2) {
+                elements.resultsContainer.innerHTML = `<p class="text-red-600 font-semibold">Please select a text color and at least 2 gradient stops.</p>`;
+                return;
+            }
+            const { minRatio } = findMinContrastInGradient(textColor, activeStops);
+            const rating = getWcagRating(minRatio);
+            elements.resultsContainer.innerHTML = `
+                <div class="flex items-center justify-center gap-4">
+                    <div><p class="text-sm text-gray-600">Min. Contrast Ratio</p><p class="text-3xl font-bold text-[#0056b8]">${minRatio.toFixed(2)}:1</p></div>
+                    <div><p class="text-sm text-gray-600">WCAG 2.2 Rating</p><p class="text-xl font-bold px-3 py-1 rounded-full ${rating.color} ${rating.text}">${rating.level}</p></div>
+                </div>`;
+            elements.accessibilityContext.innerHTML = rating.context;
+            const cssGradient = generateCssGradient(activeStops);
+            elements.previewPane.style.backgroundImage = cssGradient;
+            elements.previewPane.querySelector('h3').style.color = textColor;
+            elements.previewPane.querySelector('p').style.color = textColor;
+            elements.suggestFixBtn.classList.toggle('hidden', rating.level === 'AAA');
+            elements.copyCssBtn.classList.remove('hidden');
+        };
+
+        const getWcagRating = (ratio) => {
+             if (ratio >= 7) return { level: 'AAA', color: 'bg-green-500', text: 'text-white', context: "<strong>Excellent contrast!</strong> This combination is highly readable across the entire gradient." };
+            if (ratio >= 4.5) return { level: 'AA', color: 'bg-yellow-500', text: 'text-black', context: "<strong>Good contrast.</strong> This is acceptable for large text, but parts of the gradient may fail for body text." };
+            return { level: 'Fail', color: 'bg-red-600', text: 'text-white', context: "<strong>Insufficient contrast.</strong> The text is not readable against some parts of this gradient." };
+        }
+
+        const handleSuggestTextFix = () => {
+            const activeStops = gradientStops.filter(s => s.color);
+            const textPaletteName = elements.textColorSelect.value;
+            const suggestionPalette = colorPalettes[textPaletteName] || allColors;
+
+            if (!textColor || activeStops.length < 2) return;
+            let bestColor = null;
+            let bestRatio = -1;
+            for (const color of suggestionPalette) {
+                const { minRatio: newRatio } = findMinContrastInGradient(color, activeStops);
+                if (newRatio >= 7) { bestColor = color; break; }
+                if (newRatio > bestRatio) { bestRatio = newRatio; bestColor = color; }
+            }
+            if (bestColor) {
+                textColor = bestColor;
+                const dropZone = elements.textColorDropZone;
+                dropZone.innerHTML = `<span class="font-mono font-bold">${textColor.toUpperCase()}</span>`;
+                dropZone.style.backgroundColor = textColor;
+                dropZone.style.color = getLuminance(textColor) > 0.5 ? '#000' : '#FFF';
+                handleCheckContrast();
+            } else {
+                elements.accessibilityContext.innerHTML = `<strong>Fix Not Found.</strong> No compliant text color was found in the selected <em>'${textPaletteName}'</em> palette to match this gradient. Try fixing the gradient instead.`;
+            }
+        };
+
+        const handleSuggestGradientFix = () => {
+            const activeStops = gradientStops.filter(s => s.color);
+            const gradientPaletteName = elements.gradientColorSelect.value;
+            const suggestionPalette = colorPalettes[gradientPaletteName] || allColors;
+
+            if (!textColor || activeStops.length < 2) return;
+            
+            const reversedStops = [...activeStops].reverse().map((stop, i) => ({...stop, position: activeStops[i].position}));
+            const { minRatio: reversedRatio } = findMinContrastInGradient(textColor, reversedStops);
+            if (reversedRatio >= 7) {
+                const activeIndices = gradientStops.map((s, i) => s.color ? i : -1).filter(i => i !== -1);
+                
+                reversedStops.forEach((stop, i) => {
+                    const originalIndex = activeIndices[i];
+                    gradientStops[originalIndex].color = stop.color;
+                });
+                
+                gradientStops.forEach((s, i) => updateGradientStopUI(i));
+                handleCheckContrast();
+                return;
+            }
+
+            const { worstColor } = findMinContrastInGradient(textColor, activeStops);
+            const problemIndex = gradientStops.findIndex(s => s.color === worstColor);
+            if (problemIndex === -1) return;
+
+            let bestReplacement = null;
+            let bestRatio = -1;
+
+            for (const color of suggestionPalette) {
+                const tempStops = gradientStops.map((s, i) => (i === problemIndex) ? { color: color, position: s.position } : s).filter(s => s.color);
+                const { minRatio: newRatio } = findMinContrastInGradient(textColor, tempStops);
+                if (newRatio >= 7) { bestReplacement = color; break; }
+                if (newRatio > bestRatio) { bestRatio = newRatio; bestReplacement = color; }
+            }
+            
+            if (bestReplacement) {
+                gradientStops[problemIndex].color = bestReplacement;
+                updateGradientStopUI(problemIndex);
+                handleCheckContrast();
+            } else {
+                 elements.accessibilityContext.innerHTML = `<strong>Fix Not Found.</strong> No compliant color was found in the selected <em>'${gradientPaletteName}'</em> palette. <br><strong>Suggestions:</strong><ul><li class='list-disc ml-4'>Try a different Gradient Color Family.</li><li class='list-disc ml-4'>Simplify the gradient by using fewer colors.</li><li class='list-disc ml-4'>Try swapping from Radial to Linear or vice-versa.</li></ul>`;
+            }
+        };
+
+        const handleCopyCss = () => {
+            const activeStops = gradientStops.filter(s => s.color);
+            const cssGradient = generateCssGradient(activeStops);
+            const css = `color: ${textColor.toUpperCase()};\nbackground-image: ${cssGradient};`;
+            navigator.clipboard.writeText(css).then(() => {
+                elements.copyCssBtn.textContent = 'Copied!';
+                setTimeout(() => { elements.copyCssBtn.textContent = 'Copy CSS'; }, 2000);
+            });
+        };
+
+        const handleReset = () => {
+            textColor = null;
+            gradientStops = Array(5).fill(null).map((_, i) => ({ color: null, position: i * 25 }));
+            elements.textColorDropZone.innerHTML = '<span class="text-gray-500">Drop Here</span>';
+            elements.textColorDropZone.style.backgroundColor = '';
+            createGradientStopZones();
+            elements.resultsContainer.innerHTML = '<p class="text-gray-600">Results will appear here.</p>';
+            elements.previewPane.style.backgroundImage = 'none';
+            elements.accessibilityContext.innerHTML = '';
+            elements.suggestFixBtn.classList.add('hidden');
+            elements.fixOptionsContainer.classList.add('hidden');
+            elements.copyCssBtn.classList.add('hidden');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDropdowns();
+            createGradientStopZones();
+            addDropListeners(elements.textColorDropZone, 'text');
+            elements.textColorSelect.addEventListener('change', (e) => generatePalette(e.target.value, elements.textColorPalette));
+            elements.gradientColorSelect.addEventListener('change', (e) => generatePalette(e.target.value, elements.gradientColorPalette));
+            elements.gradientDirection.addEventListener('input', (e) => elements.directionValue.textContent = e.target.value);
+            elements.gradientType.addEventListener('change', (e) => {
+                const isLinear = e.target.value === 'linear';
+                elements.linearDirectionControl.classList.toggle('hidden', !isLinear);
+                elements.radialPositionControl.classList.toggle('hidden', isLinear);
+            });
+            elements.submitBtn.addEventListener('click', handleCheckContrast);
+            elements.suggestFixBtn.addEventListener('click', () => {
+                elements.suggestFixBtn.classList.add('hidden');
+                elements.fixOptionsContainer.classList.remove('hidden');
+            });
+            elements.suggestTextFixBtn.addEventListener('click', handleSuggestTextFix);
+            elements.suggestGradientFixBtn.addEventListener('click', handleSuggestGradientFix);
+            elements.copyCssBtn.addEventListener('click', handleCopyCss);
+            elements.resetBtn.addEventListener('click', handleReset);
+        });
+    </script>
+</body>
+</html>

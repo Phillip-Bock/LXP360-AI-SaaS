@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - panorama</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <div id="container"></div>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - cube panorama demo
+    </div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+
+      let camera, controls;
+      let renderer;
+      let scene;
+
+      init();
+      animate();
+
+      function init() {
+
+        const container = document.getElementById('container');
+
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        scene = new v3d.Scene();
+
+        camera = new v3d.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 0.01;
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.enableDamping = true;
+        controls.rotateSpeed = -0.25;
+
+        const textures = getTexturesFromAtlasFile('textures/cube/sun_temple_stripe.jpg', 6);
+
+        const materials = [];
+
+        for (let i = 0; i < 6; i++) {
+
+          materials.push(new v3d.MeshBasicMaterial({ map: textures[i] }));
+
+        }
+
+        const skyBox = new v3d.Mesh(new v3d.BoxGeometry(1, 1, 1), materials);
+        skyBox.geometry.scale(1, 1, -1);
+        scene.add(skyBox);
+
+        window.addEventListener('resize', onWindowResize);
+
+      }
+
+      function getTexturesFromAtlasFile(atlasImgUrl, tilesNum) {
+
+        const textures = [];
+
+        for (let i = 0; i < tilesNum; i++) {
+
+          textures[i] = new v3d.Texture();
+
+        }
+
+        new v3d.ImageLoader()
+          .load(atlasImgUrl, (image) => {
+
+            let canvas, context;
+            const tileWidth = image.height;
+
+            for (let i = 0; i < textures.length; i++) {
+
+              canvas = document.createElement('canvas');
+              context = canvas.getContext('2d');
+              canvas.height = tileWidth;
+              canvas.width = tileWidth;
+              context.drawImage(image, tileWidth * i, 0, tileWidth, tileWidth, 0, 0, tileWidth, tileWidth);
+              textures[i].image = canvas;
+              textures[i].needsUpdate = true;
+
+            }
+
+          });
+
+        return textures;
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        controls.update(); // required when damping is enabled
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+  </body>
+</html>

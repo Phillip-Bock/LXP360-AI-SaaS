@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - materials - car</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+    <style>
+      body {
+        color: #bbbbbb;
+        background: #333333;
+      }
+      a {
+        color: #08f;
+      }
+      .colorPicker {
+        display: inline-block;
+        margin: 0 10px
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> car materials<br/>
+      Ferrari 458 Italia model by <a href="https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6" target="_blank" rel="noopener">vicent091036</a>
+      <br><br>
+      <span class="colorPicker"><input id="body-color" type="color" value="#ff0000"></input><br/>Body</span>
+      <span class="colorPicker"><input id="details-color" type="color" value="#ffffff"></input><br/>Details</span>
+      <span class="colorPicker"><input id="glass-color" type="color" value="#ffffff"></input><br/>Glass</span>
+    </div>
+
+    <div id="container"></div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+
+      import Stats from 'v3d/addons/libs/stats.module.js';
+
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+
+      import { GLTFLoader } from 'v3d/addons/loaders/GLTFLoader.js';
+      import { DRACOLoader } from 'v3d/addons/loaders/DRACOLoader.js';
+      import { RGBELoader } from 'v3d/addons/loaders/RGBELoader.js';
+
+      let camera, scene, renderer;
+      let stats;
+
+      let grid;
+      let controls;
+
+      const wheels = [];
+
+      function init() {
+
+        const container = document.getElementById('container');
+
+        renderer = new v3d.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setAnimationLoop(render);
+        renderer.outputEncoding = v3d.sRGBEncoding;
+        renderer.toneMapping = v3d.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.85;
+        container.appendChild(renderer.domElement);
+
+        window.addEventListener('resize', onWindowResize);
+
+        stats = new Stats();
+        container.appendChild(stats.dom);
+
+        //
+
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(4.25, 1.4, -4.5);
+
+        controls = new OrbitControls(camera, container);
+        controls.enableDamping = true;
+        controls.maxDistance = 9;
+        controls.target.set(0, 0.5, 0);
+        controls.update();
+
+        scene = new v3d.Scene();
+        scene.background = new v3d.Color(0x333333);
+        scene.environment = new RGBELoader().load('textures/equirectangular/venice_sunset_1k.hdr');
+        scene.environment.mapping = v3d.EquirectangularReflectionMapping;
+        scene.fog = new v3d.Fog(0x333333, 10, 15);
+
+        grid = new v3d.GridHelper(20, 40, 0xffffff, 0xffffff);
+        grid.material.opacity = 0.2;
+        grid.material.depthWrite = false;
+        grid.material.transparent = true;
+        scene.add(grid);
+
+        // materials
+
+        const bodyMaterial = new v3d.MeshPhysicalMaterial({
+          color: 0xff0000, metalness: 1.0, roughness: 0.5, clearcoat: 1.0, clearcoatRoughness: 0.03, sheen: 0.5
+        });
+
+        const detailsMaterial = new v3d.MeshStandardMaterial({
+          color: 0xffffff, metalness: 1.0, roughness: 0.5
+        });
+
+        const glassMaterial = new v3d.MeshPhysicalMaterial({
+          color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
+        });
+
+        const bodyColorInput = document.getElementById('body-color');
+        bodyColorInput.addEventListener('input', function() {
+
+          bodyMaterial.color.set(this.value);
+
+        });
+
+        const detailsColorInput = document.getElementById('details-color');
+        detailsColorInput.addEventListener('input', function() {
+
+          detailsMaterial.color.set(this.value);
+
+        });
+
+        const glassColorInput = document.getElementById('glass-color');
+        glassColorInput.addEventListener('input', function() {
+
+          glassMaterial.color.set(this.value);
+
+        });
+
+        // Car
+
+        const shadow = new v3d.TextureLoader().load('models/gltf/ferrari_ao.png');
+
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('jsm/libs/draco/gltf/');
+
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+
+        loader.load('models/gltf/ferrari.glb', function(gltf) {
+
+          const carModel = gltf.scene.children[0];
+
+          carModel.getObjectByName('body').material = bodyMaterial;
+
+          carModel.getObjectByName('rim_fl').material = detailsMaterial;
+          carModel.getObjectByName('rim_fr').material = detailsMaterial;
+          carModel.getObjectByName('rim_rr').material = detailsMaterial;
+          carModel.getObjectByName('rim_rl').material = detailsMaterial;
+          carModel.getObjectByName('trim').material = detailsMaterial;
+
+          carModel.getObjectByName('glass').material = glassMaterial;
+
+          wheels.push(
+            carModel.getObjectByName('wheel_fl'),
+            carModel.getObjectByName('wheel_fr'),
+            carModel.getObjectByName('wheel_rl'),
+            carModel.getObjectByName('wheel_rr')
+          );
+
+          // shadow
+          const mesh = new v3d.Mesh(
+            new v3d.PlaneGeometry(0.655 * 4, 1.3 * 4),
+            new v3d.MeshBasicMaterial({
+              map: shadow, blending: v3d.MultiplyBlending, toneMapped: false, transparent: true
+            })
+          );
+          mesh.rotation.x = - Math.PI / 2;
+          mesh.renderOrder = 2;
+          carModel.add(mesh);
+
+          scene.add(carModel);
+
+        });
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      function render() {
+
+        controls.update();
+
+        const time = -performance.now() / 1000;
+
+        for (let i = 0; i < wheels.length; i++) {
+
+          wheels[i].rotation.x = time * Math.PI * 2;
+
+        }
+
+        grid.position.z = - (time) % 1;
+
+        renderer.render(scene, camera);
+
+        stats.update();
+
+      }
+
+      init();
+
+    </script>
+
+  </body>
+</html>

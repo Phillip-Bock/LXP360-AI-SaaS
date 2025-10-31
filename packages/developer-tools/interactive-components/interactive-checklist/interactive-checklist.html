@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction: Healthy Skepticism in the AI Era</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f9fafb;
+        }
+        .custom-checkbox:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+            background-color: #234F7A;
+            border-color: #234F7A;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #234F7A;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .bg-brand-primary { background-color: #234F7A; }
+        .focus\:ring-brand-primary:focus { --tw-ring-color: #234F7A; }
+
+        .btn {
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        .btn-3d {
+            background-color: #234F7A;
+            color: white;
+            border: none;
+            border-bottom: 4px solid #1b3b5c;
+        }
+        .btn-3d:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-3d:active { transform: translateY(2px); border-bottom-width: 2px; filter: brightness(0.9); }
+        
+        .btn-secondary {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #374151; /* gray-700 */
+            border: none;
+            border-bottom: 4px solid #9ca3af; /* gray-400 */
+        }
+        .btn-secondary:hover { transform: translateY(-2px); background-color: #d1d5db; } /* gray-300 */
+        .btn-secondary:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+        .checklist-item-container { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .checklist-item-container:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #completion-message.animate-in { animation: fadeInSlideUp 0.5s ease-out forwards; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-3xl mx-auto bg-white rounded-[10px] shadow-lg p-6 md:p-8">
+        
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Practicing Healthy Skepticism in the AI Era</h1>
+            <p class="text-gray-600 mt-2">A healthy skepticism is essential when encountering information, especially when it supports a particular vested interest or seems designed to elicit a strong emotional response. Critical thinkers routinely question claims by asking:</p>
+            <p class="text-gray-600 mt-2">Check off each point as you consider it for any new information.</p>
+        </div>
+
+        <div class="mb-6">
+            <div class="bg-gray-200 rounded-[10px] h-2.5"><div id="progress-bar" class="bg-brand-primary h-2.5 rounded-[10px] transition-all duration-500" style="width: 0%"></div></div>
+            <p id="progress-text" class="text-center text-sm text-gray-600 mt-2">0 of 4 completed</p>
+        </div>
+
+        <div id="checklist" class="space-y-4">
+            <div class="checklist-item-container flex items-center p-4 bg-gray-50 rounded-[10px] border border-gray-200">
+                <label class="flex items-center flex-grow cursor-pointer">
+                    <input type="checkbox" class="custom-checkbox h-6 w-6 rounded-[10px] border-gray-300 focus:ring-offset-0 focus:ring-2 focus:ring-opacity-50 focus:ring-brand-primary">
+                    <span class="ml-4 text-base font-medium text-gray-700">How can I test the truth of this claim by seeking independent verification?</span>
+                </label>
+                <button class="dive-deeper-btn btn btn-3d ml-4 flex-shrink-0">Explore</button>
+            </div>
+            <div class="checklist-item-container flex items-center p-4 bg-gray-50 rounded-[10px] border border-gray-200">
+                <label class="flex items-center flex-grow cursor-pointer">
+                    <input type="checkbox" class="custom-checkbox h-6 w-6 rounded-[10px] border-gray-300 focus:ring-offset-0 focus:ring-2 focus:ring-opacity-50 focus:ring-brand-primary">
+                    <span class="ml-4 text-base font-medium text-gray-700">Is believing this consistent with what I already know to be true from reliable, established sources?</span>
+                </label>
+                <button class="dive-deeper-btn btn btn-3d ml-4 flex-shrink-0">Explore</button>
+            </div>
+            <div class="checklist-item-container flex items-center p-4 bg-gray-50 rounded-[10px] border border-gray-200">
+                <label class="flex items-center flex-grow cursor-pointer">
+                    <input type="checkbox" class="custom-checkbox h-6 w-6 rounded-[10px] border-gray-300 focus:ring-offset-0 focus:ring-2 focus:ring-opacity-50 focus:ring-brand-primary">
+                    <span class="ml-4 text-base font-medium text-gray-700">Does the source have a clear system for assessing claims of its kind?</span>
+                </label>
+                <button class="dive-deeper-btn btn btn-3d ml-4 flex-shrink-0">Explore</button>
+            </div>
+            <div class="checklist-item-container flex items-center p-4 bg-gray-50 rounded-[10px] border border-gray-200">
+                <label class="flex items-center flex-grow cursor-pointer">
+                    <input type="checkbox" class="custom-checkbox h-6 w-6 rounded-[10px] border-gray-300 focus:ring-offset-0 focus:ring-2 focus:ring-opacity-50 focus:ring-brand-primary">
+                    <span class="ml-4 text-base font-medium text-gray-700">Does this information serve the interests of the person or group asserting it?</span>
+                </label>
+                <button class="dive-deeper-btn btn btn-3d ml-4 flex-shrink-0">Explore</button>
+            </div>
+        </div>
+
+        <div id="completion-message" class="hidden text-center p-4 mt-6 bg-green-100 text-green-800 rounded-[10px]"><p class="font-bold">Great job! You've reviewed the key principles of healthy skepticism.</p></div>
+        <div class="mt-8 text-center"><button id="reset-button" class="btn btn-3d px-8 py-3">Reset Checklist</button></div>
+    </div>
+
+    <!-- AI Scenario Modal -->
+    <div id="ai-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[10px] shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b">
+                <!-- Added an ID to the h3 for dynamic title update -->
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800">AI Scenario</h3>
+            </div>
+            <div id="modal-content" class="p-6 overflow-y-auto flex-grow">
+                <div id="modal-spinner" class="flex justify-center items-center h-48">
+                    <div class="spinner"></div>
+                </div>
+                <div id="modal-text" class="text-gray-600 leading-relaxed"></div>
+            </div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end items-center gap-4">
+                <span id="copy-feedback" class="text-sm text-green-600 font-bold hidden">Copied!</span>
+                <button id="copy-scenario-btn" class="btn btn-secondary hidden">Copy</button>
+                <button id="close-modal-btn" class="btn btn-3d">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="reset-confirm-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-[10px] shadow-xl w-full max-w-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 text-center">Are you sure?</h3>
+            <p class="text-center text-gray-600 mt-2">This will clear your checklist progress.</p>
+            <div class="flex justify-center gap-4 mt-6">
+                <button id="cancel-reset-btn" class="btn btn-secondary px-6">Cancel</button>
+                <button id="confirm-reset-btn" class="btn btn-3d px-6">Yes, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            async function callGemini(prompt) {
+                const apiKey = ""; // API key is provided by the environment
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                // Construct the payload with generationConfig for JSON output
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "title": { "type": "STRING" },
+                                "scenario": { "type": "STRING" }
+                            },
+                            "propertyOrdering": ["title", "scenario"]
+                        }
+                    }
+                };
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`HTTP error! status: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates?.[0]?.content?.parts?.[0]) {
+                        const jsonText = result.candidates[0].content.parts[0].text;
+                        try {
+                            const parsedJson = JSON.parse(jsonText);
+                            // Ensure the expected properties exist
+                            if (parsedJson.title && parsedJson.scenario) {
+                                return parsedJson; // Return the parsed object
+                            } else {
+                                throw new Error("AI response JSON missing 'title' or 'scenario' properties.");
+                            }
+                        } catch (jsonError) {
+                            throw new Error(`Failed to parse AI response JSON: ${jsonError.message}. Raw response: ${jsonText}`);
+                        }
+                    } else {
+                        throw new Error("Could not parse AI response. The response format was invalid.");
+                    }
+                } catch (error) {
+                    console.error("Error in callGemini:", error);
+                    throw new Error(`Network or API call failed. Details: ${error.message}`);
+                }
+            }
+
+            const storageKey = 'riseChecklistProgress_1';
+            const checkboxes = document.querySelectorAll('.custom-checkbox');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const completionMessage = document.getElementById('completion-message');
+            const totalCheckboxes = checkboxes.length;
+
+            function saveProgress() {
+                const progress = Array.from(checkboxes).map(cb => cb.checked);
+                localStorage.setItem(storageKey, JSON.stringify(progress));
+            }
+
+            function updateProgress() {
+                const checkedCount = document.querySelectorAll('.custom-checkbox:checked').length;
+                progressBar.style.width = `${(checkedCount / totalCheckboxes) * 100}%`;
+                progressText.textContent = `${checkedCount} of ${totalCheckboxes} completed`;
+                completionMessage.classList.toggle('hidden', checkedCount !== totalCheckboxes);
+                if (checkedCount === totalCheckboxes) completionMessage.classList.add('animate-in');
+                else completionMessage.classList.remove('animate-in');
+                saveProgress();
+            }
+
+            function loadProgress() {
+                const savedProgress = JSON.parse(localStorage.getItem(storageKey));
+                if (savedProgress?.length === totalCheckboxes) {
+                    checkboxes.forEach((cb, i) => { cb.checked = savedProgress[i]; });
+                }
+                updateProgress();
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', updateProgress));
+            
+            const resetButton = document.getElementById('reset-button');
+            const resetModal = document.getElementById('reset-confirm-modal');
+            const confirmResetBtn = document.getElementById('confirm-reset-btn');
+            const cancelResetBtn = document.getElementById('cancel-reset-btn');
+
+            resetButton.addEventListener('click', () => resetModal.classList.remove('hidden'));
+            cancelResetBtn.addEventListener('click', () => resetModal.classList.add('hidden'));
+            confirmResetBtn.addEventListener('click', () => {
+                checkboxes.forEach(cb => { cb.checked = false; });
+                localStorage.removeItem(storageKey);
+                updateProgress();
+                resetModal.classList.add('hidden');
+            });
+
+            const diveDeeperButtons = document.querySelectorAll('.dive-deeper-btn');
+            const aiModal = document.getElementById('ai-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalSpinner = document.getElementById('modal-spinner');
+            const modalText = document.getElementById('modal-text');
+            const modalTitle = document.getElementById('modal-title'); // Get the modal title element
+            const copyScenarioBtn = document.getElementById('copy-scenario-btn');
+            const copyFeedback = document.getElementById('copy-feedback');
+
+            diveDeeperButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const principleText = e.target.closest('.checklist-item-container').querySelector('span').textContent;
+                    aiModal.classList.remove('hidden');
+                    modalSpinner.classList.remove('hidden');
+                    modalText.innerHTML = '';
+                    modalTitle.textContent = 'Generating Scenario...'; // Set a temporary title
+                    copyScenarioBtn.classList.add('hidden');
+                    button.disabled = true;
+
+                    // Updated prompt to request JSON with title and concise scenario
+                    const prompt = `Provide a very brief, concise, real-world AI-related scenario (max 50 words) illustrating: "${principleText}". Also, provide a short, descriptive title for this scenario (max 5 words). Return this as a JSON object with 'title' and 'scenario' keys. Example: {"title": "Fake News Alert", "scenario": "A news article generated by AI spreads misinformation about a political candidate, causing public confusion."}`;
+                    try {
+                        const responseData = await callGemini(prompt); // callGemini now returns an object
+                        modalTitle.textContent = responseData.title; // Set the dynamic title
+                        modalText.innerHTML = `<strong>Scenario:</strong> ${responseData.scenario.replace(/\n/g, '<br>')}`; // Set the scenario text
+                        copyScenarioBtn.classList.remove('hidden');
+                    } catch (error) {
+                        modalTitle.textContent = 'Error'; // Set error title
+                        modalText.innerHTML = `<div class="text-red-500"><p class="font-bold">Could not generate a scenario.</p><p class="text-sm mt-2">Please try again later. If the problem persists, here is the error detail:</p><p class="text-xs mt-2 p-2 bg-gray-100 rounded-[10px] font-mono">${error.message}</p></div>`;
+                    } finally {
+                        modalSpinner.classList.add('hidden');
+                        button.disabled = false;
+                    }
+                });
+            });
+
+            closeModalBtn.addEventListener('click', () => aiModal.classList.add('hidden'));
+            aiModal.addEventListener('click', (e) => { if (e.target === aiModal) aiModal.classList.add('hidden'); });
+
+            copyScenarioBtn.addEventListener('click', () => {
+                const textToCopy = modalText.innerText;
+                const tempTextarea = document.createElement('textarea');
+                tempTextarea.value = textToCopy;
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextarea);
+
+                copyFeedback.classList.remove('hidden');
+                setTimeout(() => copyFeedback.classList.add('hidden'), 5000);
+            });
+
+            loadProgress();
+        });
+    </script>
+</body>
+</html>

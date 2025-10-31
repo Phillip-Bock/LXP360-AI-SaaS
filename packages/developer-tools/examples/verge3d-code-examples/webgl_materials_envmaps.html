@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - materials - environment maps</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
+
+    <div id="info">
+      <a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> - webgl environment mapping example<br/>
+      Equirectangular Map by <a href="http://www.flickr.com/photos/jonragnarsson/2294472375/" target="_blank" rel="noopener">J&oacute;n Ragnarsson</a>.
+    </div>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+
+      import { GUI } from 'v3d/addons/libs/lil-gui.module.min.js';
+      import { OrbitControls } from 'v3d/addons/controls/OrbitControls.js';
+
+      let controls, camera, scene, renderer;
+      let textureEquirec, textureCube;
+      let sphereMesh, sphereMaterial;
+
+      init();
+      animate();
+
+      function init() {
+
+        // CAMERAS
+
+        camera = new v3d.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
+        camera.position.set(0, 0, 1000);
+
+        // SCENE
+
+        scene = new v3d.Scene();
+
+        // Textures
+
+        const loader = new v3d.CubeTextureLoader();
+        loader.setPath('textures/cube/Bridge2/');
+
+        textureCube = loader.load(['posx.jpg', 'negx.jpg', 'posy.jpg', 'negy.jpg', 'posz.jpg', 'negz.jpg']);
+        textureCube.encoding = v3d.sRGBEncoding;
+
+        const textureLoader = new v3d.TextureLoader();
+
+        textureEquirec = textureLoader.load('textures/2294472375_24a3b8ef46_o.jpg');
+        textureEquirec.mapping = v3d.EquirectangularReflectionMapping;
+        textureEquirec.encoding = v3d.sRGBEncoding;
+
+        scene.background = textureCube;
+
+        //
+
+        const geometry = new v3d.IcosahedronGeometry(400, 15);
+        sphereMaterial = new v3d.MeshBasicMaterial({ envMap: textureCube });
+        sphereMesh = new v3d.Mesh(geometry, sphereMaterial);
+        scene.add(sphereMesh);
+
+        //
+
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.outputEncoding = v3d.sRGBEncoding;
+        document.body.appendChild(renderer.domElement);
+
+        //
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.minDistance = 500;
+        controls.maxDistance = 2500;
+
+        //
+
+        const params = {
+          Cube: function() {
+
+            scene.background = textureCube;
+
+            sphereMaterial.envMap = textureCube;
+            sphereMaterial.needsUpdate = true;
+
+          },
+          Equirectangular: function() {
+
+            scene.background = textureEquirec;
+
+            sphereMaterial.envMap = textureEquirec;
+            sphereMaterial.needsUpdate = true;
+
+          },
+          Refraction: false
+        };
+
+        const gui = new GUI();
+        gui.add(params, 'Cube');
+        gui.add(params, 'Equirectangular');
+        gui.add(params, 'Refraction').onChange(function(value) {
+
+          if (value) {
+
+            textureEquirec.mapping = v3d.EquirectangularRefractionMapping;
+            textureCube.mapping = v3d.CubeRefractionMapping;
+
+          } else {
+
+            textureEquirec.mapping = v3d.EquirectangularReflectionMapping;
+            textureCube.mapping = v3d.CubeReflectionMapping;
+
+          }
+
+          sphereMaterial.needsUpdate = true;
+
+        });
+        gui.open();
+
+        window.addEventListener('resize', onWindowResize);
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      //
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        render();
+
+      }
+
+      function render() {
+
+        camera.lookAt(scene.position);
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+
+  </body>
+</html>

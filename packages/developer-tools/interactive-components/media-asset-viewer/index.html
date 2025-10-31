@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LXD360 G-Drive Media Asset Viewer</title>
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom Tailwind CSS Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Lato", "sans-serif"],
+            },
+            colors: {
+              "primary-blue": "#0056b8",
+              "secondary-blue": "#019EF3",
+              "dark-grey": "#232323",
+              "light-grey": "#f0f0f0",
+              "warning-red": "#dc0404",
+              "confirmed-green": "#3ad20c",
+              "error-yellow": "#ffc933",
+              "disabled-bg": "#707070",
+              "disabled-text": "#FFFFFF",
+              "active-blue": "#0072f5",
+              "hover-blue": "#34b7fe",
+              "revert-hover": "#fb4b4b",
+              "input-bg": "#e0e0e0",
+              "table-border": "#a3a3a3",
+            },
+            borderRadius: {
+              xl: "10px",
+            },
+            boxShadow: {
+              "custom-light": "3px 3px 8px rgba(0,0,0,0.2)",
+              active: "2px 2px 6px #70b3ff",
+              disabled: "2px 2px 6px #FFFFFF",
+              hover: "2px 2px 6px #ebf8ff",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Our Custom Files -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="bg-white text-black">
+    <!-- The main application container -->
+    <div id="app" class="container mx-auto p-4 max-w-full">
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-6">
+        <h1 class="text-4xl font-bold text-primary-blue">
+          LXD360 G-Drive Media Asset Viewer
+        </h1>
+        <img
+          src="https://storage.googleapis.com/gemini-prod-us-west1-assets/LXD360-INSPIRE-Tansparent_SVG_For_Web_Apps.svg"
+          alt="LXD360 Logo"
+          class="h-24"
+          onerror="this.onerror=null; this.src='https://placehold.co/100x100/FFFFFF/000000?text=LXD360';"
+        />
+      </header>
+
+      <!-- Main Content Area -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Left Panel: Controls and Metadata -->
+        <div
+          class="xl:col-span-2 bg-light-grey p-6 rounded-xl border border-primary-blue shadow-custom-light"
+        >
+          <!-- Controls -->
+          <div class="flex flex-wrap items-center gap-4 mb-4">
+            <div class="relative w-full sm:w-auto sm:flex-1">
+              <select
+                id="mediaCategory"
+                class="appearance-none w-full bg-input-bg border-0 text-dark-grey py-2 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:ring-2 focus:ring-hover-blue font-bold"
+              >
+                <option value="None Selected">None Selected</option>
+                <option>Video</option>
+                <option>Audio</option>
+                <option>2D Image</option>
+                <option>360° Image</option>
+                <option>3D Scene</option>
+                <option>3D Artifact</option>
+                <option>Code Interaction</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-dark-grey"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div class="relative flex-grow w-full sm:w-auto sm:flex-1">
+              <input
+                type="text"
+                id="searchInput"
+                class="w-full bg-input-bg border-0 text-dark-grey font-bold pl-10 pr-10 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-hover-blue"
+                placeholder="Search tags..."
+              />
+              <div
+                class="absolute top-0 left-0 inline-flex items-center p-2 h-full text-dark-grey"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    d="M8.25 10.875a2.625 2.625 0 1 1 5.25 0 2.625 2.625 0 0 1-5.25 0Z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.125 4.5a4.125 4.125 0 1 0 2.338 7.524l2.007 2.006a.75.75 0 1 0 1.06-1.06l-2.006-2.007a4.125 4.125 0 0 0-3.399-6.463Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <button
+                id="clearSearchBtn"
+                class="absolute top-0 right-0 inline-flex items-center p-2 h-full text-dark-grey hover:text-warning-red hidden"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            <button
+              id="filterBtn"
+              class="action-button bg-active-blue flex items-center justify-center w-full sm:w-auto"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="size-6 mr-2"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Filter
+            </button>
+          </div>
+          <!-- Metadata Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full bg-white text-black rounded-xl">
+              <thead class="bg-dark-grey text-white">
+                <tr>
+                  <th scope="col" id="checkbox-header" class="p-2 hidden"></th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm rounded-tl-xl"
+                  >
+                    File Name
+                  </th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm hidden md:table-cell"
+                  >
+                    Version
+                  </th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm hidden lg:table-cell"
+                  >
+                    Project
+                  </th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm"
+                  >
+                    Owner
+                  </th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    class="text-left py-3 px-4 uppercase font-semibold text-sm rounded-tr-xl hidden lg:table-cell"
+                  >
+                    Tags
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="assetTableBody">
+                <!-- JS will populate this -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination Controls -->
+          <div
+            id="paginationContainer"
+            class="mt-4 flex flex-wrap justify-between items-center gap-4 text-black font-bold"
+          >
+            <!-- JS will populate this -->
+          </div>
+          <!-- Action Buttons -->
+          <div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-4">
+            <button id="uploadBtn" class="action-button">Upload</button>
+            <button id="downloadBtn" class="action-button">Download</button>
+            <button id="editBtn" class="action-button">Edit</button>
+            <button id="saveBtn" class="action-button">Save</button>
+            <button id="revertBtn" class="action-button">Revert</button>
+            <button id="refreshBtn" class="action-button">Refresh</button>
+          </div>
+        </div>
+        <!-- Right Panel: Media Viewer -->
+        <div
+          class="bg-light-grey p-6 rounded-xl border border-primary-blue shadow-custom-light flex flex-col items-center justify-center min-h-[400px]"
+        >
+          <h2 class="text-3xl font-bold mb-4 text-dark-grey">Media Viewer</h2>
+          <div
+            id="mediaViewer"
+            class="w-full h-96 bg-input-bg rounded-xl flex items-center justify-center text-gray-500"
+          >
+            Select an asset to view
+          </div>
+          <p
+            id="viewerCaption"
+            class="mt-4 font-semibold text-lg text-dark-grey"
+          ></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Libraries for Viewers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Our Custom JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>

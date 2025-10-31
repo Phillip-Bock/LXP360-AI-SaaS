@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verge3D webgl - buffer geometry custom attributes - particles</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <div id="container"></div>
+    <div id="info"><a href="https://www.soft8soft.com/verge3d" target="_blank" rel="noopener">Verge3D</a> webgl - buffergeometry custom attributes - particles</div>
+
+    <script type="x-shader/x-vertex" id="vertexshader">
+
+      attribute float size;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        vColor = color;
+
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+
+        gl_PointSize = size * (300.0 / -mvPosition.z);
+
+        gl_Position = projectionMatrix * mvPosition;
+
+      }
+
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragmentshader">
+
+      uniform sampler2D pointTexture;
+
+      varying vec3 vColor;
+
+      void main() {
+
+        gl_FragColor = vec4(vColor, 1.0);
+
+        gl_FragColor = gl_FragColor * texture2D(pointTexture, gl_PointCoord);
+
+      }
+
+    </script>
+
+    <!-- Import maps polyfill -->
+    <!-- Remove this when import maps will be widely supported -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "v3d": "../build/v3d.module.js",
+          "v3d/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+
+      import * as v3d from 'v3d';
+
+      import Stats from 'v3d/addons/libs/stats.module.js';
+
+      let renderer, scene, camera, stats;
+
+      let particleSystem, uniforms, geometry;
+
+      const particles = 100000;
+
+      init();
+      animate();
+
+      function init() {
+
+        camera = new v3d.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = 300;
+
+        scene = new v3d.Scene();
+
+        uniforms = {
+
+          pointTexture: { value: new v3d.TextureLoader().load('textures/sprites/spark1.png') }
+
+        };
+
+        const shaderMaterial = new v3d.ShaderMaterial({
+
+          uniforms: uniforms,
+          vertexShader: document.getElementById('vertexshader').textContent,
+          fragmentShader: document.getElementById('fragmentshader').textContent,
+
+          blending: v3d.AdditiveBlending,
+          depthTest: false,
+          transparent: true,
+          vertexColors: true
+
+        });
+
+
+        const radius = 200;
+
+        geometry = new v3d.BufferGeometry();
+
+        const positions = [];
+        const colors = [];
+        const sizes = [];
+
+        const color = new v3d.Color();
+
+        for (let i = 0; i < particles; i++) {
+
+          positions.push((Math.random() * 2 - 1) * radius);
+          positions.push((Math.random() * 2 - 1) * radius);
+          positions.push((Math.random() * 2 - 1) * radius);
+
+          color.setHSL(i / particles, 1.0, 0.5);
+
+          colors.push(color.r, color.g, color.b);
+
+          sizes.push(20);
+
+        }
+
+        geometry.setAttribute('position', new v3d.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new v3d.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new v3d.Float32BufferAttribute(sizes, 1).setUsage(v3d.DynamicDrawUsage));
+
+        particleSystem = new v3d.Points(geometry, shaderMaterial);
+
+        scene.add(particleSystem);
+
+        renderer = new v3d.WebGLRenderer();
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const container = document.getElementById('container');
+        container.appendChild(renderer.domElement);
+
+        stats = new Stats();
+        container.appendChild(stats.dom);
+
+        //
+
+        window.addEventListener('resize', onWindowResize);
+
+      }
+
+      function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+      }
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        render();
+        stats.update();
+
+      }
+
+      function render() {
+
+        const time = Date.now() * 0.005;
+
+        particleSystem.rotation.z = 0.01 * time;
+
+        const sizes = geometry.attributes.size.array;
+
+        for (let i = 0; i < particles; i++) {
+
+          sizes[i] = 10 * (1 + Math.sin(0.1 * i + time));
+
+        }
+
+        geometry.attributes.size.needsUpdate = true;
+
+        renderer.render(scene, camera);
+
+      }
+
+    </script>
+
+</body>
+</html>

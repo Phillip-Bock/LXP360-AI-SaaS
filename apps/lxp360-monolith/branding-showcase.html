@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LXP360 Branding Showcase - Light & Dark Mode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+  <style>
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .mode-toggle {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      z-index: 100;
+      padding: 12px 24px;
+      background: #7103A0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .mode-toggle:hover {
+      background: #8D04C8;
+      transform: scale(1.05);
+    }
+
+    .dark-mode { display: none; }
+    body.dark .dark-mode { display: block; }
+    body.dark .light-mode { display: none; }
+  </style>
+</head>
+<body class="transition-colors duration-300">
+
+  <button class="mode-toggle" onclick="toggleMode()">
+    <span class="toggle-text">Switch to Dark Mode 🌙</span>
+  </button>
+
+  <!-- LIGHT MODE -->
+  <div class="light-mode">
+    <div class="min-h-screen bg-white">
+      <!-- Label Banner -->
+      <div class="fixed top-0 left-0 right-0 z-50 bg-[#7103A0] text-white text-center py-2 font-semibold">
+        ☀️ LIGHT MODE EXAMPLE - All Branding Elements Labeled
+      </div>
+
+      <!-- Hero Section -->
+      <div class="relative pt-20 pb-32 px-8 text-center overflow-hidden bg-[#F5F5F5]">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10">
+          <div class="absolute top-20 left-10 w-64 h-64 bg-[#0056B8] rounded-full blur-3xl"></div>
+          <div class="absolute bottom-20 right-10 w-96 h-96 bg-[#7103A0] rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+          <div class="inline-block mb-4 px-4 py-2 bg-white border-[1.5px] border-[#7103A0] rounded-lg shadow-sm">
+            <span class="text-xs text-[#7103A0] font-semibold uppercase tracking-wider">
+              [LABEL] Purple Tech Badge - Outline Only (Never Solid Fill)
+            </span>
+          </div>
+
+          <h1 class="text-6xl font-bold text-[#232323] mb-6" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            LXP360 Brand System
+          </h1>
+
+          <p class="text-lg text-[#525252] mb-2" style="font-family: Inter, sans-serif">
+            [LABEL] H1 Heading (Plus Jakarta Sans 700) + Body Text (Inter 400)
+          </p>
+
+          <p class="text-xl text-[#525252] max-w-2xl mx-auto mb-8" style="font-family: Inter, sans-serif">
+            Light Mode Alternative - Background #FFFFFF (White)
+          </p>
+
+          <div class="flex gap-4 justify-center flex-wrap">
+            <button class="px-6 py-3 bg-[#0056B8] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold transition-all duration-150 hover:bg-[#00438F] active:bg-[#003066] shadow-md" style="font-family: Inter, sans-serif">
+              Primary Button
+            </button>
+            <button class="px-6 py-3 bg-transparent text-[#0056B8] rounded-lg border-2 border-[#0056B8] font-semibold transition-all duration-150 hover:bg-[#0056B8]/10 active:bg-[#0056B8]/20" style="font-family: Inter, sans-serif">
+              Secondary Button
+            </button>
+          </div>
+
+          <p class="text-sm text-[#707070] mt-4">
+            [LABEL] Hover/Tap Animations - Normal → Hover → Active States
+          </p>
+        </div>
+      </div>
+
+      <!-- Component Examples -->
+      <div class="py-16 px-8 bg-[#F5F5F5]">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-[#232323] text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Component Examples
+          </h2>
+          <p class="text-center text-[#525252] mb-12">
+            [LABEL] Floating Effect (Border + Shadow)
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card 1 -->
+            <div class="p-6 bg-white border-[1.5px] border-[#D6D6D6] rounded-lg" style="box-shadow: 0 2px 10px rgba(214, 214, 214, 0.1), 0 0 0 1px rgba(214, 214, 214, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#0056B8] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-[#232323] mb-2">Level 1 Elevation</h3>
+              <p class="text-[#525252] text-sm mb-4">
+                [LABEL] Subtle float for cards. Border 2-3 shades lighter than container.
+              </p>
+              <code class="text-xs text-[#0056B8] bg-[#EBF8FF] px-2 py-1 rounded">box-shadow: 0 2px 10px</code>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="p-6 bg-white border-[1.5px] border-[#D6D6D6] rounded-lg" style="box-shadow: 0 4px 20px rgba(214, 214, 214, 0.15), 0 0 0 1px rgba(214, 214, 214, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#30AE0A] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-[#232323] mb-2">Level 2 Elevation</h3>
+              <p class="text-[#525252] text-sm mb-4">
+                [LABEL] Medium float for modals/dialogs. Green from Success palette.
+              </p>
+              <code class="text-xs text-[#0056B8] bg-[#EBF8FF] px-2 py-1 rounded">box-shadow: 0 4px 20px</code>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="p-6 bg-white border-[1.5px] border-[#D6D6D6] rounded-lg" style="box-shadow: 0 8px 30px rgba(214, 214, 214, 0.2), 0 0 0 1px rgba(214, 214, 214, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#F56200] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white animate-spin"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-[#232323] mb-2">Level 3 Elevation</h3>
+              <p class="text-[#525252] text-sm mb-4">
+                [LABEL] High float for dropdowns/tooltips. Orange from Warning palette.
+              </p>
+              <code class="text-xs text-[#0056B8] bg-[#EBF8FF] px-2 py-1 rounded">box-shadow: 0 8px 30px</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purple Usage Examples -->
+      <div class="py-16 px-8 bg-white">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-[#232323] text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Purple Usage (Technology Features)
+          </h2>
+          <p class="text-center text-[#525252] mb-12">
+            [LABEL] Outlines, Glows, Shadows ONLY - Never Solid Fills
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- AI Badge -->
+            <div class="p-8 bg-[#F5F5F5] rounded-lg text-center">
+              <div class="inline-block px-6 py-3 border-2 border-[#63028D] rounded-lg mb-4" style="background: rgba(99, 2, 141, 0.05); box-shadow: 0 0 20px rgba(99, 2, 141, 0.4)">
+                <i class="ph ph-sparkle text-[#8D04C8] text-2xl"></i>
+                <span class="text-[#8D04C8] font-semibold ml-2">AI-Powered</span>
+              </div>
+              <p class="text-sm text-[#525252]">
+                [LABEL] Purple border + 5% tint + glow shadow
+              </p>
+              <code class="text-xs text-[#0056B8] bg-[#EBF8FF] px-2 py-1 rounded inline-block mt-2">border: 2px solid #63028D</code>
+            </div>
+
+            <!-- Premium Badge -->
+            <div class="p-8 bg-[#F5F5F5] rounded-lg text-center">
+              <div class="inline-block px-6 py-3 border-[1.5px] border-[#7103A0] rounded-lg mb-4" style="background: rgba(113, 3, 160, 0.03); box-shadow: 0 0 15px rgba(113, 3, 160, 0.3)">
+                <i class="ph ph-lightning text-[#9B04DC] text-2xl"></i>
+                <span class="text-[#9B04DC] font-semibold ml-2">Premium Feature</span>
+              </div>
+              <p class="text-sm text-[#525252]">
+                [LABEL] Lighter purple outline + minimal tint + glow
+              </p>
+              <code class="text-xs text-[#0056B8] bg-[#EBF8FF] px-2 py-1 rounded inline-block mt-2">border: 1.5px solid #7103A0</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive States -->
+      <div class="py-16 px-8 bg-[#F5F5F5]">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-[#232323] text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Interactive State Progression
+          </h2>
+          <p class="text-center text-[#525252] mb-12">
+            [LABEL] Normal → Hover → Active → Disabled (2-3 shades per state)
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <button class="px-6 py-3 bg-[#0056B8] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold shadow-sm">Normal</button>
+            <button class="px-6 py-3 bg-[#00438F] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold shadow-sm">Hover</button>
+            <button class="px-6 py-3 bg-[#003066] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold shadow-sm">Active</button>
+            <button class="px-6 py-3 bg-[#EBEBEB] text-[#666666] rounded-lg border-[1.5px] border-[#D6D6D6] font-semibold cursor-not-allowed">Disabled</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK MODE -->
+  <div class="dark-mode">
+    <div class="min-h-screen bg-[#001D3D]">
+      <!-- Label Banner -->
+      <div class="fixed top-0 left-0 right-0 z-50 bg-[#7103A0] text-white text-center py-2 font-semibold">
+        🌙 DARK MODE EXAMPLE - All Branding Elements Labeled
+      </div>
+
+      <!-- Hero Section -->
+      <div class="relative pt-20 pb-32 px-8 text-center overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-20">
+          <div class="absolute top-20 left-10 w-64 h-64 bg-[#1F87FF] rounded-full blur-3xl"></div>
+          <div class="absolute bottom-20 right-10 w-96 h-96 bg-[#63028D] rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+          <div class="inline-block mb-4 px-4 py-2 bg-[#232323] border-[1.5px] border-[#7103A0] rounded-lg">
+            <span class="text-xs text-[#D580FF] font-semibold uppercase tracking-wider">
+              [LABEL] Purple Tech Badge - Outline Only (Never Solid Fill)
+            </span>
+          </div>
+
+          <h1 class="text-6xl font-bold text-white mb-6" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            LXP360 Brand System
+          </h1>
+
+          <p class="text-lg text-[#CCCCCC] mb-2" style="font-family: Inter, sans-serif">
+            [LABEL] H1 Heading (Plus Jakarta Sans 700) + Body Text (Inter 400)
+          </p>
+
+          <p class="text-xl text-[#CCCCCC] max-w-2xl mx-auto mb-8" style="font-family: Inter, sans-serif">
+            Dark Mode Default - Background #001D3D (Blue Dark 950)
+          </p>
+
+          <div class="flex gap-4 justify-center flex-wrap">
+            <button class="px-6 py-3 bg-[#0056B8] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold transition-all duration-150 hover:bg-[#1F87FF] active:bg-[#99C9FF]" style="font-family: Inter, sans-serif">
+              Primary Button
+            </button>
+            <button class="px-6 py-3 bg-transparent text-[#70B3FF] rounded-lg border-2 border-[#70B3FF] font-semibold transition-all duration-150 hover:bg-[#70B3FF]/10 active:bg-[#70B3FF]/20" style="font-family: Inter, sans-serif">
+              Secondary Button
+            </button>
+          </div>
+
+          <p class="text-sm text-[#A3A3A3] mt-4">
+            [LABEL] Hover/Tap Animations - Normal → Hover → Active States
+          </p>
+        </div>
+      </div>
+
+      <!-- Component Examples -->
+      <div class="py-16 px-8 bg-[#001D3D]">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-white text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Component Examples
+          </h2>
+          <p class="text-center text-[#CCCCCC] mb-12">
+            [LABEL] Floating Effect (Border + Shadow)
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card 1 -->
+            <div class="p-6 bg-[#232323] border-[1.5px] border-[#474747] rounded-lg" style="box-shadow: 0 2px 10px rgba(71, 71, 71, 0.1), 0 0 0 1px rgba(71, 71, 71, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#0056B8] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Level 1 Elevation</h3>
+              <p class="text-[#CCCCCC] text-sm mb-4">
+                [LABEL] Subtle float for cards. Border 2-3 shades lighter than container.
+              </p>
+              <code class="text-xs text-[#70B3FF] bg-[#003066] px-2 py-1 rounded">box-shadow: 0 2px 10px</code>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="p-6 bg-[#232323] border-[1.5px] border-[#474747] rounded-lg" style="box-shadow: 0 4px 20px rgba(71, 71, 71, 0.15), 0 0 0 1px rgba(71, 71, 71, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#30AE0A] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Level 2 Elevation</h3>
+              <p class="text-[#CCCCCC] text-sm mb-4">
+                [LABEL] Medium float for modals/dialogs. Green from Success palette.
+              </p>
+              <code class="text-xs text-[#70B3FF] bg-[#003066] px-2 py-1 rounded">box-shadow: 0 4px 20px</code>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="p-6 bg-[#232323] border-[1.5px] border-[#474747] rounded-lg" style="box-shadow: 0 8px 30px rgba(71, 71, 71, 0.2), 0 0 0 1px rgba(71, 71, 71, 1)">
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-[#F56200] rounded-lg mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white animate-spin"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Level 3 Elevation</h3>
+              <p class="text-[#CCCCCC] text-sm mb-4">
+                [LABEL] High float for dropdowns/tooltips. Orange from Warning palette.
+              </p>
+              <code class="text-xs text-[#70B3FF] bg-[#003066] px-2 py-1 rounded">box-shadow: 0 8px 30px</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purple Usage Examples -->
+      <div class="py-16 px-8 bg-[#003066]">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-white text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Purple Usage (Technology Features)
+          </h2>
+          <p class="text-center text-[#CCCCCC] mb-12">
+            [LABEL] Outlines, Glows, Shadows ONLY - Never Solid Fills
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- AI Badge -->
+            <div class="p-8 bg-[#232323] rounded-lg text-center">
+              <div class="inline-block px-6 py-3 border-2 border-[#63028D] rounded-lg mb-4" style="background: rgba(99, 2, 141, 0.05); box-shadow: 0 0 20px rgba(99, 2, 141, 0.4)">
+                <i class="ph ph-sparkle text-[#D580FF] text-2xl"></i>
+                <span class="text-[#D580FF] font-semibold ml-2">AI-Powered</span>
+              </div>
+              <p class="text-sm text-[#CCCCCC]">
+                [LABEL] Purple border + 5% tint + glow shadow
+              </p>
+              <code class="text-xs text-[#70B3FF] bg-[#003066] px-2 py-1 rounded inline-block mt-2">border: 2px solid #63028D</code>
+            </div>
+
+            <!-- Premium Badge -->
+            <div class="p-8 bg-[#232323] rounded-lg text-center">
+              <div class="inline-block px-6 py-3 border-[1.5px] border-[#7103A0] rounded-lg mb-4" style="background: rgba(113, 3, 160, 0.03); box-shadow: 0 0 15px rgba(113, 3, 160, 0.3)">
+                <i class="ph ph-lightning text-[#E89EFF] text-2xl"></i>
+                <span class="text-[#E89EFF] font-semibold ml-2">Premium Feature</span>
+              </div>
+              <p class="text-sm text-[#CCCCCC]">
+                [LABEL] Lighter purple outline + minimal tint + glow
+              </p>
+              <code class="text-xs text-[#70B3FF] bg-[#003066] px-2 py-1 rounded inline-block mt-2">border: 1.5px solid #7103A0</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive States -->
+      <div class="py-16 px-8 bg-[#001D3D]">
+        <div class="max-w-6xl mx-auto">
+          <h2 class="text-4xl font-bold text-white text-center mb-4" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            Interactive State Progression
+          </h2>
+          <p class="text-center text-[#CCCCCC] mb-12">
+            [LABEL] Normal → Hover → Active → Disabled (2-3 shades per state)
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <button class="px-6 py-3 bg-[#0056B8] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold">Normal</button>
+            <button class="px-6 py-3 bg-[#1F87FF] text-white rounded-lg border-[1.5px] border-[#0072F5] font-semibold">Hover</button>
+            <button class="px-6 py-3 bg-[#99C9FF] text-[#003066] rounded-lg border-[1.5px] border-[#0072F5] font-semibold">Active</button>
+            <button class="px-6 py-3 bg-[#3D3D3D] text-[#A3A3A3] rounded-lg border-[1.5px] border-[#525252] font-semibold cursor-not-allowed">Disabled</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark');
+      const text = document.querySelector('.toggle-text');
+      if (document.body.classList.contains('dark')) {
+        text.textContent = 'Switch to Light Mode ☀️';
+      } else {
+        text.textContent = 'Switch to Dark Mode 🌙';
+      }
+    }
+  </script>
+</body>
+</html>

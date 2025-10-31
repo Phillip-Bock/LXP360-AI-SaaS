@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Identifying Reliable Information (Tabbed)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base body styles for Inter font and background */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6; /* Light gray background */
+        color: #374151; /* Dark gray text */
+        /* Ensure body does not have a fixed height or min-height, as content will be self-contained */
+        min-height: auto;
+        height: auto;
+        overflow-y: auto; /* Allow scrolling within the iframe if content exceeds height */
+      }
+
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #e0e7ff; /* Light blue track */
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #6366f1; /* Indigo thumb */
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #4f46e5; /* Darker indigo on hover */
+      }
+
+      /* Loading spinner animation */
+      .loading-spinner {
+        border: 4px solid rgba(35, 79, 122, 0.1); /* Branding color for track */
+        border-left-color: #234f7a; /* Branding color for spinner */
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Icon styling for consistency */
+      .icon-button {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 8px;
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+
+      /* Custom border-radius of 10px for elements */
+      .custom-rounded-10 {
+        border-radius: 10px;
+      }
+
+      /* Subtle drop shadow for boxes */
+      .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Specific border colors for feedback - Thicker borders */
+      .border-green {
+        border-color: #10b981;
+        border-width: 3px;
+      }
+      .border-orange {
+        border-color: #f59e0b;
+        border-width: 3px;
+      }
+      .border-red {
+        border-color: #ef4444;
+        border-width: 3px;
+      }
+
+      /* Modal specific styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .modal-content {
+        background-color: white;
+        padding: 30px;
+        max-width: 600px;
+        width: 90%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+        border-radius: 10px; /* Apply custom rounded corners to modal */
+      }
+      .modal-close-button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #6b7280;
+      }
+
+      /* Tab specific styles */
+      .tab-header-item {
+        flex-grow: 1; /* Allows items to grow and take up available space */
+        flex-basis: 0; /* Ensures items start from 0 width before growing */
+        text-align: center; /* Centers the text within each tab */
+        white-space: nowrap; /* Prevents the text from wrapping */
+        overflow: hidden; /* Hides any overflowing text if absolutely necessary */
+        text-overflow: ellipsis; /* Adds an ellipsis (...) for hidden text */
+        padding: 0.75rem 1rem; /* Padding for tab headers */
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        border-bottom: 3px solid transparent; /* Active indicator */
+      }
+      .tab-header-item.active {
+        background-color: #e0e7ff; /* Light blue for active tab background */
+        color: #234f7a; /* Darker text for active tab */
+        font-weight: 600;
+        border-bottom-color: #234f7a; /* Stronger indicator for active tab */
+      }
+      .tab-content {
+        display: none; /* Hide all tab content by default */
+        padding-top: 1rem;
+      }
+      .tab-content.active {
+        display: block; /* Show active tab content */
+      }
+      /* Ensure the main content area for the tabs has a defined height or max-height
+           and allows internal scrolling if content overflows */
+      .tab-content-area {
+        max-height: 800px; /* Adjust this value as needed for your desired tab content height */
+        overflow-y: auto; /* Enable vertical scrolling for tab content */
+        padding-right: 10px; /* Space for scrollbar */
+      }
+    </style>
+  </head>
+  <body class="p-4 sm:p-6 md:p-8 lg:p-10 flex items-center justify-center">
+    <div
+      class="max-w-4xl w-full bg-white shadow-lg custom-rounded-10 p-6 sm:p-8 md:p-10 lg:p-12 border border-gray-200"
+    >
+      <h1
+        class="text-3xl sm:text-4xl font-bold text-center text-[#234F7A] mb-6 sm:mb-8"
+      >
+        Identifying Reliable Information in the Age of AI
+      </h1>
+
+      <p class="text-base sm:text-lg text-gray-700 mb-8 leading-relaxed">
+        Welcome! This interactive activity is designed to sharpen your critical
+        thinking skills. In today's information landscape, knowing how to spot
+        reliable sources is crucial. Here, you can analyze real-world scenarios,
+        apply principles of source evaluation, and compare your insights with an
+        AI mentor to deepen your understanding.
+      </p>
+
+      <!-- Section: Interactive Activity with Tabs -->
+      <div class="mb-8 p-4 bg-[#EAF5FF] custom-rounded-10 shadow-lg">
+        <h2
+          class="text-left font-semibold text-xl sm:text-2xl text-[#2B5986] py-3"
+        >
+          Apply Your Skills: Real-World Scenarios
+        </h2>
+
+        <!-- Tab Headers -->
+        <div
+          id="tabHeaders"
+          class="flex flex-wrap justify-center border-b border-gray-300 mb-4"
+        >
+          <div class="tab-header-item active" data-tab-target="scenario1Tab">
+            Scenario 1: Social Media
+          </div>
+          <div class="tab-header-item" data-tab-target="scenario2Tab">
+            Scenario 2: Research Digest
+          </div>
+          <div class="tab-header-item" data-tab-target="scenario3Tab">
+            Scenario 3: Online Forum
+          </div>
+        </div>
+
+        <!-- Tab Content Area - This will contain the scrollable content for each tab -->
+        <div class="tab-content-area">
+          <!-- Tab Content for Scenario 1 -->
+          <div id="scenario1Tab" class="tab-content active">
+            <div
+              class="bg-white p-5 custom-rounded-10 shadow-lg mb-6 border border-gray-200"
+            >
+              <h3 class="font-bold text-lg sm:text-xl text-[#326392] mb-4">
+                Scenario 1: The Viral Social Media Post
+              </h3>
+              <p class="mb-4">
+                <span
+                  id="scenario1TypeLabel"
+                  class="font-semibold text-[#234F7A]"
+                  >Original Scenario:</span
+                >
+                <span
+                  id="scenario1Text"
+                  data-original-text="You see a post on a popular social media platform claiming that a new 'miracle supplement' can instantly boost energy and cure chronic fatigue. The post is shared by an influencer with millions of followers, featuring glowing testimonials from individuals. However, there are no links to scientific studies, medical journals, or reputable health organizations."
+                  >You see a post on a popular social media platform claiming
+                  that a new 'miracle supplement' can instantly boost energy and
+                  cure chronic fatigue. The post is shared by an influencer with
+                  millions of followers, featuring glowing testimonials from
+                  individuals. However, there are no links to scientific
+                  studies, medical journals, or reputable health
+                  organizations.</span
+                >
+              </p>
+              <label
+                for="scenario1Reasoning"
+                class="block font-medium text-gray-800 mb-2"
+                >Your Analysis:</label
+              >
+              <textarea
+                id="scenario1Reasoning"
+                rows="4"
+                class="w-full p-3 border border-gray-300 custom-rounded-10 focus:ring-2 focus:ring-[#4277A9] focus:border-transparent mb-4"
+                placeholder="Consider the source's reputation and whether it cites its information..."
+              ></textarea>
+              <div
+                class="flex flex-col sm:flex-row gap-3 justify-between items-stretch"
+              >
+                <button
+                  id="scenario1MentorButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="getAIFeedback('scenario1Text', 'scenario1Reasoning', 'scenario1MentorButton', 'scenario1ChallengeButton')"
+                >
+                  <span class="button-text">E-Mentor</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="#68A9E4"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 3.53 2.61 6.43 6 6.92V21h2v-5.08c3.39-.49 6-3.39 6-6.92 0-3.87-3.13-7-7-7zm0 10.5c-2.48 0-4.5-2.02-4.5-4.5S9.52 3.5 12 3.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario1RephraseButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="rephraseScenario('scenario1Text', 'scenario1TypeLabel', 'scenario1RephraseButton')"
+                >
+                  <span class="button-text">Rephrase Scenario</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.6-.93-.9-2-.9-3.2 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.6.93.9 2 .9 3.2 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario1ChallengeButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1 opacity-50 cursor-not-allowed"
+                  disabled=""
+                  onclick="generateChallengeQuestion('scenario1Text', 'scenario1TypeLabel', 'scenario1ChallengeButton')"
+                >
+                  <span class="button-text">Challenge Question</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="resetScenario('scenario1')"
+                >
+                  Reset Scenario
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content for Scenario 2 -->
+          <div id="scenario2Tab" class="tab-content">
+            <div
+              class="bg-white p-5 custom-rounded-10 shadow-lg mb-6 border border-gray-200"
+            >
+              <h3 class="font-bold text-lg sm:text-xl text-[#326392] mb-4">
+                Scenario 2: The AI-Generated Research Digest
+              </h3>
+              <p class="mb-4">
+                <span
+                  id="scenario2TypeLabel"
+                  class="font-semibold text-[#234F7A]"
+                  >Original Scenario:</span
+                >
+                <span
+                  id="scenario2Text"
+                  data-original-text="You're researching a complex topic and find an AI-generated digest of recent scientific breakthroughs on a well-known academic research platform. The digest is concise and highlights key findings, but it explicitly states that it's a summary and encourages users to click through to the original, peer-reviewed articles which are linked directly within the text."
+                  >You're researching a complex topic and find an AI-generated
+                  digest of recent scientific breakthroughs on a well-known
+                  academic research platform. The digest is concise and
+                  highlights key findings, but it explicitly states that it's a
+                  summary and encourages users to click through to the original,
+                  peer-reviewed articles which are linked directly within the
+                  text.</span
+                >
+              </p>
+              <label
+                for="scenario2Reasoning"
+                class="block font-medium text-gray-800 mb-2"
+                >Your Analysis:</label
+              >
+              <textarea
+                id="scenario2Reasoning"
+                rows="4"
+                class="w-full p-3 border border-gray-300 custom-rounded-10 focus:ring-2 focus:ring-[#4277A9] focus:border-transparent mb-4"
+                placeholder="Consider whether it cites its information and the platform's reputation..."
+              ></textarea>
+              <div
+                class="flex flex-col sm:flex-row gap-3 justify-between items-stretch"
+              >
+                <button
+                  id="scenario2MentorButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="getAIFeedback('scenario2Text', 'scenario2Reasoning', 'scenario2MentorButton', 'scenario2ChallengeButton')"
+                >
+                  <span class="button-text">E-Mentor</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="#68A9E4"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 3.53 2.61 6.43 6 6.92V21h2v-5.08c3.39-.49 6-3.39 6-6.92 0-3.87-3.13-7-7-7zm0 10.5c-2.48 0-4.5-2.02-4.5-4.5S9.52 3.5 12 3.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario2RephraseButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="rephraseScenario('scenario2Text', 'scenario2TypeLabel', 'scenario2RephraseButton')"
+                >
+                  <span class="button-text">Rephrase Scenario</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.6-.93-.9-2-.9-3.2 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.6.93.9 2 .9 3.2 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario2ChallengeButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1 opacity-50 cursor-not-allowed"
+                  disabled=""
+                  onclick="generateChallengeQuestion('scenario2Text', 'scenario2TypeLabel', 'scenario2ChallengeButton')"
+                >
+                  <span class="button-text">Challenge Question</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="resetScenario('scenario2')"
+                >
+                  Reset Scenario
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content for Scenario 3 -->
+          <div id="scenario3Tab" class="tab-content">
+            <div
+              class="bg-white p-5 custom-rounded-10 shadow-lg mb-6 border border-gray-200"
+            >
+              <h3 class="font-bold text-lg sm:text-xl text-[#326392] mb-4">
+                Scenario 3: The Anonymous Online Forum
+              </h3>
+              <p class="mb-4">
+                <span
+                  id="scenario3TypeLabel"
+                  class="font-semibold text-[#234F7A]"
+                  >Original Scenario:</span
+                >
+                <span
+                  id="scenario3Text"
+                  data-original-text="You are looking for troubleshooting advice for a common software issue and find a lengthy discussion on an anonymous online forum. Several users offer solutions, some contradicting others. There are no verifiable credentials for any of the contributors, and while some posts mention specific technical terms, none link to official documentation or support pages."
+                  >You are looking for troubleshooting advice for a common
+                  software issue and find a lengthy discussion on an anonymous
+                  online forum. Several users offer solutions, some
+                  contradicting others. There are no verifiable credentials for
+                  any of the contributors, and while some posts mention specific
+                  technical terms, none link to official documentation or
+                  support pages.</span
+                >
+              </p>
+              <label
+                for="scenario3Reasoning"
+                class="block font-medium text-gray-800 mb-2"
+                >Your Analysis:</label
+              >
+              <textarea
+                id="scenario3Reasoning"
+                rows="4"
+                class="w-full p-3 border border-gray-300 custom-rounded-10 focus:ring-2 focus:ring-[#4277A9] focus:border-transparent mb-4"
+                placeholder="Consider the contributors' anonymity and lack of citations..."
+              ></textarea>
+              <div
+                class="flex flex-col sm:flex-row gap-3 justify-between items-stretch"
+              >
+                <button
+                  id="scenario3MentorButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="getAIFeedback('scenario3Text', 'scenario3Reasoning', 'scenario3MentorButton', 'scenario3ChallengeButton')"
+                >
+                  <span class="button-text">E-Mentor</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="#68A9E4"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 3.53 2.61 6.43 6 6.92V21h2v-5.08c3.39-.49 6-3.39 6-6.92 0-3.87-3.13-7-7-7zm0 10.5c-2.48 0-4.5-2.02-4.5-4.5S9.52 3.5 12 3.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario3RephraseButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="rephraseScenario('scenario3Text', 'scenario3TypeLabel', 'scenario3RephraseButton')"
+                >
+                  <span class="button-text">Rephrase Scenario</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.6-.93-.9-2-.9-3.2 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.6.93.9 2 .9 3.2 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  id="scenario3ChallengeButton"
+                  class="bg-[#234F7A] hover:bg-[#326392] text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1 opacity-50 cursor-not-allowed"
+                  disabled=""
+                  onclick="generateChallengeQuestion('scenario3Text', 'scenario3TypeLabel', 'scenario3ChallengeButton')"
+                >
+                  <span class="button-text">Challenge Question</span>
+                  <svg
+                    class="icon-button"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                    ></path>
+                  </svg>
+                  <span class="loading-spinner hidden"></span>
+                </button>
+                <button
+                  class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 custom-rounded-10 shadow-md transition duration-300 ease-in-out flex items-center justify-center w-full sm:flex-1"
+                  onclick="resetScenario('scenario3')"
+                >
+                  Reset Scenario
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E-Mentor Feedback Modal -->
+      <div id="mentorFeedbackModal" class="modal-overlay hidden">
+        <div
+          class="modal-content custom-rounded-10 border"
+          id="mentorModalContent"
+        >
+          <button class="modal-close-button" onclick="closeModal()">×</button>
+          <h3 class="text-xl font-bold text-[#234F7A] mb-4">
+            E-Mentor Feedback
+          </h3>
+          <div id="modalFeedbackText" class="text-gray-700 mb-4"></div>
+          <button
+            id="copyFeedbackButton"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 custom-rounded-10 shadow-sm transition duration-300 ease-in-out flex items-center justify-center"
+            onclick="copyToClipboard('modalFeedbackText')"
+          >
+            Copy Feedback
+            <svg
+              class="icon-button ml-1"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- JavaScript -->
+      <script>
+        // Function to handle tab switching
+        function openTab(event, tabId) {
+          // Get all tab content elements and hide them
+          const tabContents = document.querySelectorAll(".tab-content");
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          // Get all tab header items and remove 'active' class
+          const tabHeaders = document.querySelectorAll(".tab-header-item");
+          tabHeaders.forEach((header) => header.classList.remove("active"));
+
+          // Show the specific tab content
+          document.getElementById(tabId).classList.add("active");
+
+          // Add 'active' class to the clicked tab header
+          event.currentTarget.classList.add("active");
+        }
+
+        // Set the first tab as active by default on load
+        document.addEventListener("DOMContentLoaded", () => {
+          const firstTabHeader = document.querySelector(".tab-header-item");
+          const firstTabContent = document.querySelector(".tab-content");
+          if (firstTabHeader && firstTabContent) {
+            firstTabHeader.classList.add("active");
+            firstTabContent.classList.add("active");
+          }
+
+          // Attach click listeners to tab headers
+          document.querySelectorAll(".tab-header-item").forEach((header) => {
+            header.addEventListener("click", (event) => {
+              const tabTargetId = event.currentTarget.dataset.tabTarget;
+              openTab(event, tabTargetId);
+            });
+          });
+        });
+
+        // Function to show the modal
+        function showModal(contentHtml, borderColorClass) {
+          const modal = document.getElementById("mentorFeedbackModal");
+          const modalContent = document.getElementById("mentorModalContent");
+          const modalFeedbackText =
+            document.getElementById("modalFeedbackText");
+
+          modalFeedbackText.innerHTML = contentHtml;
+          modalContent.className = "modal-content custom-rounded-10 border"; // Reset classes
+          modalContent.classList.add(borderColorClass);
+          modal.classList.remove("hidden");
+        }
+
+        // Function to close the modal
+        function closeModal() {
+          const modal = document.getElementById("mentorFeedbackModal");
+          modal.classList.add("hidden");
+        }
+
+        // --- Helper function to manage button loading state ---
+        function setButtonLoading(button, isLoading) {
+          const textSpan = button.querySelector(".button-text");
+          const spinner = button.querySelector(".loading-spinner");
+          if (isLoading) {
+            textSpan.classList.add("hidden");
+            spinner.classList.remove("hidden");
+            button.disabled = true;
+          } else {
+            textSpan.classList.remove("hidden");
+            spinner.classList.add("hidden");
+            button.disabled = false;
+          }
+        }
+
+        // Function to get AI-powered feedback
+        async function getAIFeedback(
+          scenarioTextId,
+          reasoningId,
+          mentorButtonId,
+          challengeButtonId
+        ) {
+          const scenarioText =
+            document.getElementById(scenarioTextId).innerText;
+          const reasoningInput = document.getElementById(reasoningId);
+          const userReasoning = reasoningInput.value;
+          const mentorButton = document.getElementById(mentorButtonId);
+          const challengeButton = document.getElementById(challengeButtonId);
+
+          if (!userReasoning.trim()) {
+            showModal(
+              '<p class="font-bold text-orange-600">Please write your analysis before requesting feedback.</p>',
+              "border-orange"
+            );
+            return;
+          }
+
+          setButtonLoading(mentorButton, true);
+
+          const prompt = `You are an expert in media literacy and critical thinking. A user has provided their analysis of a given scenario regarding information reliability. Your task is to provide concise, encouraging, and constructive feedback on their analysis, focusing on whether they correctly considered the source's reputability, potential agenda, and citation practices. Your response MUST be a JSON object with two keys: "feedback" (string) and "quality_rating" (string, one of: "Excellent", "Good", "Fair", "Poor").
+
+Scenario: "${scenarioText}"
+User's Analysis: "${userReasoning}"
+
+JSON Response:`;
+
+          try {
+            const responseData = await callGeminiAPI(prompt, {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "OBJECT",
+                properties: {
+                  feedback: { type: "STRING" },
+                  quality_rating: {
+                    type: "STRING",
+                    enum: ["Excellent", "Good", "Fair", "Poor"],
+                  },
+                },
+                required: ["feedback", "quality_rating"],
+              },
+            });
+
+            const feedbackText =
+              responseData.feedback || "No feedback provided.";
+            const qualityRating = responseData.quality_rating || "Poor";
+
+            let borderColorClass = "border-red";
+            if (qualityRating === "Excellent" || qualityRating === "Good") {
+              borderColorClass = "border-green";
+              challengeButton.disabled = false;
+              challengeButton.classList.remove(
+                "opacity-50",
+                "cursor-not-allowed"
+              );
+            } else if (qualityRating === "Fair") {
+              borderColorClass = "border-orange";
+            }
+
+            showModal(
+              `<p class="font-bold mb-2">Feedback (${qualityRating}):</p><p>${feedbackText}</p>`,
+              borderColorClass
+            );
+            reasoningInput.value = ""; // Clear input after successful feedback
+          } catch (error) {
+            console.error("Error in getAIFeedback:", error);
+            showModal(
+              `<p class="font-bold text-red-800">Error:</p><p>${error.message}</p>`,
+              "border-red"
+            );
+          } finally {
+            setButtonLoading(mentorButton, false);
+          }
+        }
+
+        // Function to rephrase the scenario
+        async function rephraseScenario(
+          scenarioTextId,
+          typeLabelId,
+          rephraseButtonId
+        ) {
+          const scenarioTextElement = document.getElementById(scenarioTextId);
+          const originalText = scenarioTextElement.dataset.originalText;
+          const typeLabel = document.getElementById(typeLabelId);
+          const rephraseButton = document.getElementById(rephraseButtonId);
+          const reasoningTextarea = document.getElementById(
+            scenarioTextId.replace("Text", "Reasoning")
+          );
+
+          if (scenarioTextElement.dataset.currentType === "rephrased") {
+            scenarioTextElement.innerText = originalText;
+            scenarioTextElement.dataset.currentType = "original";
+            typeLabel.innerText = "Original Scenario:";
+            rephraseButton.querySelector(".button-text").innerText =
+              "Rephrase Scenario";
+            return;
+          }
+
+          setButtonLoading(rephraseButton, true);
+          reasoningTextarea.value = "";
+
+          const prompt = `Rephrase the following scenario about identifying reliable information to offer a slightly different perspective or simpler wording, while retaining all original key details and context. The rephrased version should be concise and directly replace the original.
+
+Original Scenario: "${originalText}"
+
+Rephrased Scenario:`;
+
+          try {
+            const rephrasedText = await callGeminiAPI(prompt);
+            scenarioTextElement.innerText = rephrasedText;
+            scenarioTextElement.dataset.currentType = "rephrased";
+            typeLabel.innerText = "Rephrased Scenario:";
+            rephraseButton.querySelector(".button-text").innerText =
+              "Revert to Original";
+          } catch (error) {
+            console.error("Error in rephraseScenario:", error);
+            showModal(
+              `<p class="font-bold text-red-800">Error:</p><p>${error.message}</p>`,
+              "border-red"
+            );
+          } finally {
+            setButtonLoading(rephraseButton, false);
+          }
+        }
+
+        // Function to generate a challenge question
+        async function generateChallengeQuestion(
+          scenarioTextId,
+          typeLabelId,
+          challengeButtonId
+        ) {
+          const scenarioTextElement = document.getElementById(scenarioTextId);
+          const originalText = scenarioTextElement.dataset.originalText;
+          const typeLabel = document.getElementById(typeLabelId);
+          const challengeButton = document.getElementById(challengeButtonId);
+          const reasoningTextarea = document.getElementById(
+            scenarioTextId.replace("Text", "Reasoning")
+          );
+
+          setButtonLoading(challengeButton, true);
+          reasoningTextarea.value = "";
+
+          const prompt = `Based on the following scenario, generate a single, concise, thought-provoking challenge question that encourages deeper critical thinking about information reliability. The question should not have a simple yes/no answer. It should directly replace the original scenario text.
+
+Scenario: "${originalText}"
+
+New Scenario Text (as a question):`;
+
+          try {
+            const challengeText = await callGeminiAPI(prompt);
+            scenarioTextElement.innerText = challengeText;
+            scenarioTextElement.dataset.currentType = "challenge";
+            typeLabel.innerText = "Challenge Question:";
+          } catch (error) {
+            console.error("Error in generateChallengeQuestion:", error);
+            showModal(
+              `<p class="font-bold text-red-800">Error:</p><p>${error.message}</p>`,
+              "border-red"
+            );
+          } finally {
+            setButtonLoading(challengeButton, false);
+          }
+        }
+
+        // --- Central API Call Function ---
+        async function callGeminiAPI(
+          prompt,
+          generationConfig = { responseMimeType: "text/plain" }
+        ) {
+          const apiKey = "AIzaSyBAnLJi4HzOWHVmf6z0Cj_oZGXR7VbEs3A"; // API key is injected by the environment.
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+          const payload = {
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: generationConfig,
+          };
+
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.json();
+            console.error("API Error Response:", errorBody);
+            throw new Error(
+              `API request failed: ${
+                errorBody.error?.message || response.statusText
+              }`
+            );
+          }
+
+          const result = await response.json();
+
+          if (result.candidates && result.candidates.length > 0) {
+            const responseText = result.candidates[0].content.parts[0].text;
+            if (generationConfig.responseMimeType === "application/json") {
+              try {
+                return JSON.parse(responseText);
+              } catch (e) {
+                console.error("Failed to parse JSON response:", responseText);
+                throw new Error("Received malformed JSON from the AI.");
+              }
+            }
+            return responseText;
+          } else {
+            throw new Error("Could not retrieve a valid response from the AI.");
+          }
+        }
+
+        // Function to reset a scenario
+        function resetScenario(scenarioId) {
+          const scenarioTextElement = document.getElementById(
+            scenarioId + "Text"
+          );
+          const originalText = scenarioTextElement.dataset.originalText;
+          const reasoningTextarea = document.getElementById(
+            scenarioId + "Reasoning"
+          );
+          const typeLabel = document.getElementById(scenarioId + "TypeLabel");
+          const rephraseButton = document.getElementById(
+            scenarioId + "RephraseButton"
+          );
+          const challengeButton = document.getElementById(
+            scenarioId + "ChallengeButton"
+          );
+
+          // Reset scenario text and type
+          scenarioTextElement.innerText = originalText;
+          scenarioTextElement.dataset.currentType = "original";
+          typeLabel.innerText = "Original Scenario:";
+
+          // Clear input
+          reasoningTextarea.value = "";
+
+          // Reset buttons
+          rephraseButton.querySelector(".button-text").innerText =
+            "Rephrase Scenario";
+          challengeButton.disabled = true;
+          challengeButton.classList.add("opacity-50", "cursor-not-allowed");
+        }
+
+        // Copy to Clipboard Function
+        function copyToClipboard(elementId) {
+          const element = document.getElementById(elementId);
+          const textToCopy = element.innerText;
+
+          const tempTextArea = document.createElement("textarea");
+          tempTextArea.value = textToCopy;
+          document.body.appendChild(tempTextArea);
+          tempTextArea.select();
+
+          try {
+            document.execCommand("copy");
+            const copyButton = document.getElementById("copyFeedbackButton");
+            if (copyButton) {
+              copyButton.innerHTML = `Copied! <svg class="icon-button ml-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>`;
+              setTimeout(() => {
+                copyButton.innerHTML = `Copy Feedback <svg class="icon-button ml-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>`;
+              }, 2000);
+            }
+          } catch (err) {
+            console.error("Failed to copy text: ", err);
+            alert("Copying to clipboard failed.");
+          } finally {
+            document.body.removeChild(tempTextArea);
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>
