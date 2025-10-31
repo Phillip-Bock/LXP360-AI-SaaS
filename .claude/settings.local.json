@@ -27,7 +27,13 @@
       "Bash(test:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: LXP360 AI-SaaS Monorepo\n\nComplete monorepo setup with all apps, packages, and components:\n\n- Apps: Monolith, Platform, Marketing, LMS, Authoring\n- Branding system locked in (light/dark modes)\n- RBAC and permissions system\n- Developer tools and interactive components\n- Complete documentation and reference materials\n- All external libraries and examples integrated\n\nAll nested .git repositories removed - this is now the single source of truth.\n\n🤖 Generated with Claude Code\nhttps://claude.com/claude-code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
