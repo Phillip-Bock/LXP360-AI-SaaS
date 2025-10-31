@@ -1,7 +1,6 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { cache } from "react"
 
 // Types for RBAC
 export interface Role {
@@ -38,7 +37,7 @@ export interface UserRole {
 /**
  * Get all roles assigned to a user
  */
-export const getUserRoles = cache(async (userId: string): Promise<UserRole[]> => {
+export async function getUserRoles(userId: string): Promise<UserRole[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -57,17 +56,17 @@ export const getUserRoles = cache(async (userId: string): Promise<UserRole[]> =>
   }
 
   return data as UserRole[]
-})
+}
 
 /**
  * Get all permissions for a user (aggregated from all their roles)
  */
-export const getUserPermissions = cache(async (userId: string): Promise<Permission[]> => {
+export async function getUserPermissions(userId: string): Promise<Permission[]> {
   const supabase = await createClient()
 
   // Get user's active roles
   const userRoles = await getUserRoles(userId)
-  const roleIds = userRoles.map((ur) => ur.role_id)
+  const roleIds = userRoles.map((ur: UserRole) => ur.role_id)
 
   if (roleIds.length === 0) {
     return []
@@ -89,21 +88,21 @@ export const getUserPermissions = cache(async (userId: string): Promise<Permissi
 
   // Deduplicate permissions
   const permissionMap = new Map<string, Permission>()
-  data.forEach((item) => {
+  data.forEach((item: any) => {
     if (item.permission) {
       permissionMap.set(item.permission.id, item.permission as Permission)
     }
   })
 
   return Array.from(permissionMap.values())
-})
+}
 
 /**
  * Check if user has a specific permission
  */
 export async function hasPermission(userId: string, permissionName: string): Promise<boolean> {
   const permissions = await getUserPermissions(userId)
-  return permissions.some((p) => p.name === permissionName)
+  return permissions.some((p: Permission) => p.name === permissionName)
 }
 
 /**
@@ -111,7 +110,7 @@ export async function hasPermission(userId: string, permissionName: string): Pro
  */
 export async function hasAnyPermission(userId: string, permissionNames: string[]): Promise<boolean> {
   const permissions = await getUserPermissions(userId)
-  const userPermissionNames = new Set(permissions.map((p) => p.name))
+  const userPermissionNames = new Set(permissions.map((p: Permission) => p.name))
   return permissionNames.some((name) => userPermissionNames.has(name))
 }
 
@@ -120,7 +119,7 @@ export async function hasAnyPermission(userId: string, permissionNames: string[]
  */
 export async function hasAllPermissions(userId: string, permissionNames: string[]): Promise<boolean> {
   const permissions = await getUserPermissions(userId)
-  const userPermissionNames = new Set(permissions.map((p) => p.name))
+  const userPermissionNames = new Set(permissions.map((p: Permission) => p.name))
   return permissionNames.every((name) => userPermissionNames.has(name))
 }
 
@@ -129,7 +128,7 @@ export async function hasAllPermissions(userId: string, permissionNames: string[
  */
 export async function hasRole(userId: string, roleName: string): Promise<boolean> {
   const roles = await getUserRoles(userId)
-  return roles.some((ur) => ur.role.name === roleName)
+  return roles.some((ur: UserRole) => ur.role.name === roleName)
 }
 
 /**
@@ -137,7 +136,7 @@ export async function hasRole(userId: string, roleName: string): Promise<boolean
  */
 export async function hasAnyRole(userId: string, roleNames: string[]): Promise<boolean> {
   const roles = await getUserRoles(userId)
-  const userRoleNames = new Set(roles.map((ur) => ur.role.name))
+  const userRoleNames = new Set(roles.map((ur: UserRole) => ur.role.name))
   return roleNames.some((name) => userRoleNames.has(name))
 }
 
@@ -146,7 +145,7 @@ export async function hasAnyRole(userId: string, roleNames: string[]): Promise<b
  */
 export async function isPlatformAdmin(userId: string): Promise<boolean> {
   const roles = await getUserRoles(userId)
-  return roles.some((ur) => ur.role.is_platform_role && ur.role.privilege_level >= 900)
+  return roles.some((ur: UserRole) => ur.role.is_platform_role && ur.role.privilege_level >= 900)
 }
 
 /**
@@ -162,7 +161,7 @@ export async function isTenantAdmin(userId: string): Promise<boolean> {
 export async function getUserPrivilegeLevel(userId: string): Promise<number> {
   const roles = await getUserRoles(userId)
   if (roles.length === 0) return 0
-  return Math.max(...roles.map((ur) => ur.role.privilege_level))
+  return Math.max(...roles.map((ur: UserRole) => ur.role.privilege_level))
 }
 
 /**

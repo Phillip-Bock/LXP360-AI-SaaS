@@ -165,13 +165,29 @@ const messages = [
 ]
 
 export default async function DashboardPage() {
-  const userRole = await getUserPrimaryRole()
-  const currentUser = await getCurrentUser()
+  // In development mode, allow access without authentication for testing
+  const isDev = process.env.NODE_ENV === "development"
+
+  let userRole = await getUserPrimaryRole()
+  let currentUser = await getCurrentUser()
 
   console.log("[v0] Dashboard - User role:", userRole)
   console.log("[v0] Dashboard - Current user:", currentUser)
 
-  // Redirect to login if not authenticated
+  // In dev mode, use default role if not authenticated
+  if (isDev && (!userRole || !currentUser)) {
+    console.log("[v0] Dev mode: Using default role (individual_learner)")
+    userRole = "individual_learner"
+    currentUser = {
+      id: "dev-user",
+      email: "dev@lxp360.com",
+      name: "Dev User",
+      department: null,
+      organizationId: null,
+    }
+  }
+
+  // Redirect to login if not authenticated (production only)
   if (!userRole || !currentUser) {
     console.log("[v0] No user or role, redirecting to login")
     redirect("/auth/login")

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BulkImportForm } from "@/components/admin/bulk-import-form"
-import { FileSpreadsheet, Users, AlertCircle } from "@phosphor-icons/react"
+import { FileSpreadsheet, Users, AlertCircle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -41,7 +41,7 @@ export default function BulkImportPage() {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#0056B8]/20 flex items-center justify-center">
-                  <FileSpreadsheet className="w-5 h-5 text-[#019EF3]" weight="duotone" />
+                  <FileSpreadsheet className="w-5 h-5 text-[#019EF3]" />
                 </div>
                 <div>
                   <CardTitle className="text-[#F5F5F5]">CSV Format</CardTitle>
@@ -64,7 +64,7 @@ export default function BulkImportPage() {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#0056B8]/20 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-[#019EF3]" weight="duotone" />
+                  <Users className="w-5 h-5 text-[#019EF3]" />
                 </div>
                 <div>
                   <CardTitle className="text-[#F5F5F5]">Default Password</CardTitle>
@@ -86,7 +86,7 @@ export default function BulkImportPage() {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#FF781F]/20 flex items-center justify-center">
-                  <AlertCircle className="w-5 h-5 text-[#FF781F]" weight="duotone" />
+                  <AlertCircle className="w-5 h-5 text-[#FF781F]" />
                 </div>
                 <div>
                   <CardTitle className="text-[#F5F5F5]">Important</CardTitle>

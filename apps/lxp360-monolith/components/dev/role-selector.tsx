@@ -43,9 +43,9 @@ export function DevRoleSelector() {
     setSelectedRole(role)
     if (typeof window !== "undefined") {
       localStorage.setItem("dev_role_override", role)
+      // Force a hard navigation to ensure localStorage is read
+      window.location.href = "/dashboard"
     }
-    // Refresh the page to apply the new role
-    router.refresh()
   }
 
   const handleClearRole = () => {

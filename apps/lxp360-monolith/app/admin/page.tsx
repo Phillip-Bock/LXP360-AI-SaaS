@@ -43,8 +43,8 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" asChild>
-            <Link href="/admin/users">
+          <Link href="/admin/users" className="block">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -61,11 +61,11 @@ export default async function AdminPage() {
                   View Users
                 </Button>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer" asChild>
-            <Link href="/admin/roles">
+          <Link href="/admin/roles" className="block">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -82,8 +82,8 @@ export default async function AdminPage() {
                   Manage Roles
                 </Button>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
         </div>
 
         <div className="mb-6">

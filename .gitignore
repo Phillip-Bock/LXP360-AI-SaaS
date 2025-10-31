@@ -71,3 +71,6 @@ next-env.d.ts
 Thumbs.db
 tmp
 out-tsc
+
+nul
+apps/lxp360-monolith/nul

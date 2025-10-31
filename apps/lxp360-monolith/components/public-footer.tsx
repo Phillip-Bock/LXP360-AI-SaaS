@@ -7,20 +7,15 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  LinkedinLogo,
-  XLogo,
-  RedditLogo,
-  MediumLogo,
-  GithubLogo,
-  SpotifyLogo,
-  AmazonLogo,
-  PinterestLogo,
-  EnvelopeSimple,
+  Linkedin,
+  Twitter,
+  Github,
+  Mail,
   MapPin,
   Clock,
   CheckCircle,
-  ShieldCheck,
-} from "@phosphor-icons/react"
+  Shield,
+} from "lucide-react"
 
 export function PublicFooter() {
   const [email, setEmail] = useState("")
@@ -37,41 +32,41 @@ export function PublicFooter() {
   }
 
   const complianceItems = [
-    { name: "SOC Type II", icon: ShieldCheck },
-    { name: "GDPR", icon: ShieldCheck },
-    { name: "HIPAA", icon: ShieldCheck },
-    { name: "CCPA/CPRA", icon: ShieldCheck },
-    { name: "ISO 27001", icon: ShieldCheck },
-    { name: "SEC", icon: ShieldCheck },
-    { name: "FINRA", icon: ShieldCheck },
+    { name: "SOC Type II", icon: Shield },
+    { name: "GDPR", icon: Shield },
+    { name: "HIPAA", icon: Shield },
+    { name: "CCPA/CPRA", icon: Shield },
+    { name: "ISO 27001", icon: Shield },
+    { name: "SEC", icon: Shield },
+    { name: "FINRA", icon: Shield },
   ]
 
   const socialLinks = [
-    { name: "LinkedIn", icon: LinkedinLogo, href: "#" },
-    { name: "X", icon: XLogo, href: "#" },
-    { name: "Reddit", icon: RedditLogo, href: "#" },
-    { name: "Medium", icon: MediumLogo, href: "#" },
-    { name: "Vimeo", icon: EnvelopeSimple, href: "#" }, // Phosphor doesn't have Vimeo, using placeholder
-    { name: "GitHub", icon: GithubLogo, href: "#" },
-    { name: "Spotify", icon: SpotifyLogo, href: "#" },
-    { name: "Amazon", icon: AmazonLogo, href: "#" },
-    { name: "Pinterest", icon: PinterestLogo, href: "#" },
+    { name: "LinkedIn", icon: Linkedin, href: "#" },
+    { name: "X", icon: Twitter, href: "#" },
+    { name: "Reddit", icon: Twitter, href: "#" },
+    { name: "Medium", icon: Twitter, href: "#" },
+    { name: "Vimeo", icon: Mail, href: "#" },
+    { name: "GitHub", icon: Github, href: "#" },
+    { name: "Spotify", icon: Twitter, href: "#" },
+    { name: "Amazon", icon: Twitter, href: "#" },
+    { name: "Pinterest", icon: Twitter, href: "#" },
   ]
 
   const supportLinks = [
-    { name: "Help Center", href: "#" },
-    { name: "Contact", href: "#" },
-    { name: "Careers", href: "#" },
+    { name: "Help Center", href: "mailto:Customer_Support@lxd360.com" },
+    { name: "Contact", href: "mailto:Administration@lxd360.com" },
+    { name: "Careers", href: "mailto:Careers@lxd360.com" },
   ]
 
   const policyLinks = [
-    { name: "Accessibility", href: "/privacy-policy" },
-    { name: "AI Disclosure", href: "/privacy-policy" },
-    { name: "Cookie Policy", href: "/privacy-policy" },
-    { name: "Data Retention & Deletion", href: "/privacy-policy" },
-    { name: "Terms Of Use", href: "/privacy-policy" },
-    { name: "Service Agreement", href: "/privacy-policy" },
-    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Accessibility", href: "/policies/accessibility" },
+    { name: "AI Disclosure", href: "/policies/ai-disclosure" },
+    { name: "Cookie Policy", href: "/policies/cookie-policy" },
+    { name: "Data Retention & Deletion", href: "/policies/data-retention-deletion" },
+    { name: "Terms Of Use", href: "/policies/terms-of-use" },
+    { name: "Service Agreement", href: "/policies/service-agreement" },
+    { name: "Privacy Policy", href: "/policies/privacy-policy" },
   ]
 
   const contactEmails = [
@@ -225,7 +220,7 @@ export function PublicFooter() {
 
               {/* Key Emails */}
               <div className="flex gap-3">
-                <EnvelopeSimple className="w-5 h-5 text-[#019EF3] flex-shrink-0 mt-0.5" weight="duotone" />
+                <Mail className="w-5 h-5 text-[#019EF3] flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-[#F5F5F5]/70 font-lato space-y-1">
                   <a href="mailto:Customer_Support@lxd360.com" className="block hover:text-[#019EF3] transition-colors">
                     Customer_Support@lxd360.com

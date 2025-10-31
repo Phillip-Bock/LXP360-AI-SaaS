@@ -60,7 +60,8 @@ export async function getUserPrimaryRole(): Promise<UserRoleType> {
     return highestRole
   } catch (error) {
     console.error("[v0] Error getting user role:", error)
-    return "individual_learner"
+    // In development mode without Supabase, return null to allow dev mode override
+    return null
   }
 }
 
@@ -123,6 +124,7 @@ export async function getCurrentUser() {
     }
   } catch (error) {
     console.error("[v0] Error getting current user:", error)
+    // In development mode without Supabase, return null to allow dev mode override
     return null
   }
 }

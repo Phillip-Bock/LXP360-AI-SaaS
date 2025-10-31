@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
-import { ArrowRight, Play } from "@phosphor-icons/react"
-import * as PhosphorIcons from "@phosphor-icons/react"
+import { ArrowRight, Play, Sparkles, Layers, BarChart3 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { ContactFormPopup } from "@/components/contact-form-popup"
 import { PublicHeader } from "@/components/public-header"
 import { PublicFooter } from "@/components/public-footer"
+import { DevRoleSelector } from "@/components/dev/role-selector"
 import { urlFor } from "@/lib/sanity/image"
 
 interface HomePageProps {
@@ -242,10 +242,14 @@ export function HomePage({ data }: HomePageProps) {
     setCurrentTestimonial((prev) => (prev - 1 + data.testimonials.length) % data.testimonials.length)
   }
 
-  // Get icon component from Phosphor Icons
+  // Get icon component from Lucide
   const getIcon = (iconName: string) => {
-    const Icon = (PhosphorIcons as any)[iconName]
-    return Icon || PhosphorIcons.Sparkle
+    const iconMap: Record<string, any> = {
+      'Sparkle': Sparkles,
+      'Stack': Layers,
+      'ChartLine': BarChart3,
+    }
+    return iconMap[iconName] || Sparkles
   }
 
   const isVideoFile = (asset: any) => {
@@ -672,6 +676,9 @@ export function HomePage({ data }: HomePageProps) {
       </Dialog>
 
       <ContactFormPopup open={showContact} onOpenChange={setShowContact} />
+
+      {/* Dev Role Selector - only shows in development mode */}
+      <DevRoleSelector />
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import LXD360Services from "@/components/lxd360-services"
 import { PublicHeader } from "@/components/public-header"
+import { PublicFooter } from "@/components/public-footer"
 
 export default function ServicesPage() {
   const router = useRouter()
@@ -14,6 +15,7 @@ export default function ServicesPage() {
         onSignUpClick={() => router.push("/auth/signup")}
       />
       <LXD360Services />
+      <PublicFooter />
     </>
   )
 }

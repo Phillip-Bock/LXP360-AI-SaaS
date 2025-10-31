@@ -3,6 +3,8 @@ import { useState } from "react"
 import { Check, Star, Sparkles, Zap, ChevronDown, ChevronUp } from "lucide-react"
 import { Users, Target, Buildings } from "@phosphor-icons/react"
 import Link from "next/link"
+import { PublicHeader } from "@/components/public-header"
+import { PublicFooter } from "@/components/public-footer"
 
 interface PricingPlan {
   id: string
@@ -178,7 +180,9 @@ export default function SubscriptionsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#001D3D] via-[#0056B8]/20 to-[#001D3D] py-20 px-4">
+    <>
+      <PublicHeader />
+      <div className="min-h-screen bg-gradient-to-br from-[#001D3D] via-[#0056B8]/20 to-[#001D3D] py-20 px-4 pt-32">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 animate-fadeIn">
@@ -400,5 +404,7 @@ export default function SubscriptionsPage() {
         }
       `}</style>
     </div>
+      <PublicFooter />
+    </>
   )
 }

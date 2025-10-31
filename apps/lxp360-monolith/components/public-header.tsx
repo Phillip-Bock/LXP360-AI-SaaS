@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
-import { Info, Briefcase, Books, BookOpen, Envelope, CreditCard } from "@phosphor-icons/react"
+import { Info, Briefcase, BookOpen, Mail, CreditCard, PenLine } from "lucide-react"
 
 interface PublicHeaderProps {
   onSignInClick?: () => void
@@ -49,11 +49,18 @@ export function PublicHeader({ onSignInClick, onSignUpClick, onContactClick }: P
               Subscriptions
             </Link>
             <Link
-              href="/advertised-courses"
+              href="/lms"
               className="flex items-center gap-2 text-sm font-medium text-[#F5F5F5] hover:text-[#019EF3] transition-colors font-lato"
             >
-              <Books className="w-4 h-4" weight="duotone" />
-              Courses
+              <BookOpen className="w-4 h-4" />
+              LXP360
+            </Link>
+            <Link
+              href="/authoring"
+              className="flex items-center gap-2 text-sm font-medium text-[#F5F5F5] hover:text-[#019EF3] transition-colors font-lato"
+            >
+              <PenLine className="w-4 h-4" />
+              INSPIRE
             </Link>
             <Link
               href="/blog"
@@ -67,7 +74,7 @@ export function PublicHeader({ onSignInClick, onSignUpClick, onContactClick }: P
                 onClick={onContactClick}
                 className="flex items-center gap-2 text-sm font-medium text-[#F5F5F5] hover:text-[#019EF3] transition-colors font-lato"
               >
-                <Envelope className="w-4 h-4" weight="duotone" />
+                <Mail className="w-4 h-4" />
                 Let's Connect
               </button>
             )}

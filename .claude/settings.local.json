@@ -33,7 +33,10 @@
       "Bash(git fetch:*)",
       "Bash(git pull:*)",
       "Bash(git checkout:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm build:*)"
     ],
     "deny": [],
     "ask": []

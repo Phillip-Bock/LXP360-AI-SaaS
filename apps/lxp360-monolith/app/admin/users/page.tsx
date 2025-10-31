@@ -53,7 +53,7 @@ export default async function UsersAdminPage() {
         <div className="flex gap-2">
           <Button asChild variant="outline">
             <Link href="/admin/users/bulk-import">
-              <Upload className="mr-2 h-4 w-4" weight="duotone" />
+              <Upload className="mr-2 h-4 w-4" />
               Bulk Import
             </Link>
           </Button>

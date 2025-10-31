@@ -1,120 +1,134 @@
-import Link from "next/link"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, BookOpen, Settings, ChartBar, Shield, Upload } from "@phosphor-icons/react/dist/ssr"
+"use client"
 
-export function AdminDashboard() {
+import { BaseDashboardTemplate } from "./base-dashboard-template"
+import {
+  User,
+  Users,
+  GraduationCap,
+  ChartBar,
+  UserPlus,
+  ClipboardText,
+  Flag,
+  FileText,
+  CalendarCheck,
+} from "@phosphor-icons/react/dist/ssr"
+
+interface AdminDashboardProps {
+  userName: string
+  userEmail: string
+}
+
+export function AdminDashboard({ userName, userEmail }: AdminDashboardProps) {
+  const stats = [
+    {
+      label: "Active Users",
+      value: "1,234",
+      icon: <Users className="w-8 h-8" weight="duotone" />,
+      trend: "+8.5%",
+      trendUp: true,
+    },
+    {
+      label: "Pending Approvals",
+      value: "23",
+      icon: <ClipboardText className="w-8 h-8" weight="duotone" />,
+      trend: "-5.2%",
+      trendUp: true,
+    },
+    {
+      label: "Active Courses",
+      value: "156",
+      icon: <GraduationCap className="w-8 h-8" weight="duotone" />,
+      trend: "+12.1%",
+      trendUp: true,
+    },
+    {
+      label: "Completion Rate",
+      value: "87%",
+      icon: <ChartBar className="w-8 h-8" weight="duotone" />,
+      trend: "+3.4%",
+      trendUp: true,
+    },
+  ]
+
+  const quickActions = [
+    {
+      label: "Manage Users",
+      icon: <Users className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("Navigate to users"),
+      variant: "primary" as const,
+    },
+    {
+      label: "Add New User",
+      icon: <UserPlus className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("Add user"),
+      variant: "primary" as const,
+    },
+    {
+      label: "Course Library",
+      icon: <GraduationCap className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("View courses"),
+      variant: "secondary" as const,
+    },
+    {
+      label: "Reports",
+      icon: <FileText className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("View reports"),
+      variant: "secondary" as const,
+    },
+    {
+      label: "Content Approvals",
+      icon: <ClipboardText className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("View approvals"),
+      variant: "outline" as const,
+    },
+    {
+      label: "Milestones",
+      icon: <Flag className="w-6 h-6" weight="duotone" />,
+      onClick: () => console.log("View milestones"),
+      variant: "outline" as const,
+    },
+  ]
+
+  const recentActivities = [
+    {
+      id: "1",
+      title: "New course approved",
+      description: "Leadership Development Program is now live",
+      time: "10 min ago",
+      icon: <GraduationCap className="w-5 h-5" weight="duotone" />,
+    },
+    {
+      id: "2",
+      title: "User role updated",
+      description: "Sarah Johnson promoted to Instructor role",
+      time: "45 min ago",
+      icon: <UserPlus className="w-5 h-5" weight="duotone" />,
+    },
+    {
+      id: "3",
+      title: "Monthly report generated",
+      description: "October learning analytics available for review",
+      time: "2 hours ago",
+      icon: <FileText className="w-5 h-5" weight="duotone" />,
+    },
+    {
+      id: "4",
+      title: "Course deadline extended",
+      description: "Compliance Training Q4 extended by 14 days",
+      time: "4 hours ago",
+      icon: <CalendarCheck className="w-5 h-5" weight="duotone" />,
+    },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-bold text-[#F5F5F5] mb-2 font-montserrat">Admin Dashboard</h1>
-        <p className="text-[#F5F5F5]/70 font-lato">Manage users, courses, and system settings</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* User Management */}
-        <Link href="/admin/users">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <Users className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">User Management</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">Manage users and roles</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-
-        {/* Course Management */}
-        <Link href="/admin/courses">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <BookOpen className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">Course Management</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">Create and manage courses</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-
-        {/* RBAC Settings */}
-        <Link href="/admin/rbac">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <Shield className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">RBAC Settings</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">
-                    Manage roles and permissions
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-
-        {/* Analytics */}
-        <Link href="/analytics">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <ChartBar className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">Analytics</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">View system analytics</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-
-        {/* Media Management */}
-        <Link href="/media-assets">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <Upload className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">Media Assets</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">Manage media library</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-
-        {/* System Settings */}
-        <Link href="/admin">
-          <Card className="bg-[#001D3D] border-[1.5px] border-[#7103A0] rounded-[10px] hover:shadow-[0_4px_20px_0_rgba(113,3,160,0.5)] transition-all cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#0056B8] rounded-[10px] group-hover:bg-[#019EF3] transition-colors">
-                  <Settings className="w-6 h-6 text-[#F5F5F5]" weight="duotone" />
-                </div>
-                <div>
-                  <CardTitle className="text-[#F5F5F5] font-montserrat">System Settings</CardTitle>
-                  <CardDescription className="text-[#F5F5F5]/70 font-lato">Configure system settings</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </Link>
-      </div>
-    </div>
+    <BaseDashboardTemplate
+      roleName="Administrator"
+      roleIcon={<User className="w-12 h-12" weight="duotone" />}
+      userName={userName}
+      userEmail={userEmail}
+      stats={stats}
+      quickActions={quickActions}
+      recentActivities={recentActivities}
+    />
   )
 }
